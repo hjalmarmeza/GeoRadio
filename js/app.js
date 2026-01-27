@@ -186,7 +186,7 @@ function setupEventListeners() {
 
 // --- Logic ---
 async function loadStations(country, city) {
-    el.gridTitle.textContent = `${city}, ${country}`;
+    el.gridTitle.textContent = city + ", " + country;
     showLoader(true);
 
     const stations = await API.getStations(country, city);
