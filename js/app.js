@@ -1,6 +1,8 @@
+```javascript
 import * as API from './api.js';
 import { RadioPlayer } from './audio.js';
 import { Storage } from './storage.js';
+import { Auth } from './auth.js';
 
 // --- SERVICE WORKER REGISTRATION ---
 if ('serviceWorker' in navigator) {
@@ -67,6 +69,8 @@ const player = new RadioPlayer();
 
 // --- Initialization ---
 async function init() {
+    Auth.init(); // Initialize Auth System
+    
     setupEventListeners();
     setupPlayerCallbacks();
 
@@ -84,24 +88,31 @@ function setupEventListeners() {
         const country = e.target.value;
         state.selectedCountry = country;
 
-        switchView('explore'); // Force back to explore View
+        // Ensure we are in Explore mode but DO NOT reset grid yet
+        // This keeps the user on the filter screen (especially mobile)
+        if (state.currentView !== 'explore') {
+            switchView('explore');
+        }
 
-        // Reset City
+        // Reset City (but keep Country selected)
         el.citySelect.innerHTML = '<option value="" disabled selected>Cargando ciudades...</option>';
         el.citySelect.disabled = true;
         el.cityGroup.classList.add('disabled');
 
-        // Reset Grid
-        state.stations = [];
-        renderCurrentView();
+        // DO NOT clear stations grid here yet. Wait for city selection.
+        // state.stations = []; 
+        // renderCurrentView(); 
 
-        showLoader(true);
+        // Show loader only inside the select? No, just wait.
+        // actually we can show loader briefly for cities
+        // showLoader(true); 
+
         const cities = await API.getCities(country);
         populateSelect(el.citySelect, cities.map(c => c.name), "Selecciona ciudad...");
 
         el.citySelect.disabled = false;
         el.cityGroup.classList.remove('disabled');
-        showLoader(false);
+        // showLoader(false);
     });
 
     // City Change
@@ -176,7 +187,7 @@ function setupEventListeners() {
 
 // --- Logic ---
 async function loadStations(country, city) {
-    el.gridTitle.textContent = `${city}, ${country}`;
+    el.gridTitle.textContent = `${ city }, ${ country } `;
     showLoader(true);
 
     const stations = await API.getStations(country, city);
@@ -216,7 +227,7 @@ function switchView(viewName) {
     // Update Content UI & Logic
     if (viewName === 'explore') {
         el.viewExplore.classList.remove('hidden');
-        el.gridTitle.textContent = state.selectedCity ? `${state.selectedCity}, ${state.selectedCountry}` : 'Explora el mundo';
+        el.gridTitle.textContent = state.selectedCity ? `${ state.selectedCity }, ${ state.selectedCountry } ` : 'Explora el mundo';
         renderStationsList(el.stationsGrid, state.stations); // Re-render to ensure state
     } else if (viewName === 'favorites') {
         el.viewFavorites.classList.remove('hidden');
@@ -268,11 +279,11 @@ function renderStationsList(container, stations, isFavView = false) {
 
     if (!stations || stations.length === 0) {
         container.innerHTML = `
-            <div class="empty-state">
+    < div class="empty-state" >
                 <span class="material-icons-round">${isFavView ? 'favorite_border' : 'signal_wifi_off'}</span>
                 <p>${isFavView ? 'Aún no tienes favoritos.' : 'No se encontraron emisoras.'}</p>
-            </div>
-        `;
+            </div >
+    `;
         return;
     }
 
@@ -286,37 +297,37 @@ function renderStationsList(container, stations, isFavView = false) {
         const logoUrl = station.favicon || '';
 
         card.innerHTML = `
-            <div class="card-actions">
-                <button class="btn-fav ${isFav ? 'active' : ''}" data-id="${station.stationuuid}">
-                    <span class="material-icons-round">${isFav ? 'favorite' : 'favorite_border'}</span>
-                </button>
-            </div>
-            <img src="${logoUrl}" class="station-logo" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(station.name)}&background=00f3ff&color=000'">
-            <div class="station-name">${station.name}</div>
-            <div class="station-tags">${station.tags ? station.tags.split(',').slice(0, 2).join(', ') : 'FM'}</div>
+    < div class="card-actions" >
+        <button class="btn-fav ${isFav ? 'active' : ''}" data-id="${station.stationuuid}">
+            <span class="material-icons-round">${isFav ? 'favorite' : 'favorite_border'}</span>
+        </button>
+            </div >
+    <img src="${logoUrl}" class="station-logo" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(station.name)}&background=00f3ff&color=000'">
+        <div class="station-name">${station.name}</div>
+        <div class="station-tags">${station.tags ? station.tags.split(',').slice(0, 2).join(', ') : 'FM'}</div>
         `;
 
         // Click on card plays
         card.addEventListener('click', (e) => {
             if (e.target.closest('.btn-fav')) return;
-            playStation(station);
+        playStation(station);
         });
 
         // Click on heart
         const btnFav = card.querySelector('.btn-fav');
         btnFav.addEventListener('click', (e) => {
             e.stopPropagation();
-            const added = Storage.toggleFavoriteStation(station);
+        const added = Storage.toggleFavoriteStation(station);
 
-            if (added) {
-                btnFav.classList.add('active');
-                btnFav.querySelector('span').textContent = 'favorite';
+        if (added) {
+            btnFav.classList.add('active');
+        btnFav.querySelector('span').textContent = 'favorite';
             } else {
-                btnFav.classList.remove('active');
-                btnFav.querySelector('span').textContent = 'favorite_border';
-                if (isFavView) {
-                    card.remove();
-                    if (container.children.length === 0) renderStationsList(container, [], true);
+            btnFav.classList.remove('active');
+        btnFav.querySelector('span').textContent = 'favorite_border';
+        if (isFavView) {
+            card.remove();
+        if (container.children.length === 0) renderStationsList(container, [], true);
                 }
             }
         });
@@ -325,63 +336,63 @@ function renderStationsList(container, stations, isFavView = false) {
     });
 }
 
-function playStation(station) {
-    state.currentStation = station;
+        function playStation(station) {
+            state.currentStation = station;
 
-    // Update UI
-    el.playerStationName.textContent = station.name;
-    el.playerStatus.textContent = "Conectando...";
-    el.playerStatus.style.color = "var(--primary)";
+        // Update UI
+        el.playerStationName.textContent = station.name;
+        el.playerStatus.textContent = "Conectando...";
+        el.playerStatus.style.color = "var(--primary)";
 
-    if (station.favicon) {
-        el.playerLogo.innerHTML = `<img src="${station.favicon}" style="width:100%; height:100%; border-radius:12px; object-fit:cover;">`;
+        if (station.favicon) {
+            el.playerLogo.innerHTML = `<img src="${station.favicon}" style="width:100%; height:100%; border-radius:12px; object-fit:cover;">`;
     } else {
-        el.playerLogo.innerHTML = `<span class="material-icons-round">radio</span>`;
+            el.playerLogo.innerHTML = `<span class="material-icons-round">radio</span>`;
     }
 
-    el.btnPlay.disabled = false;
+        el.btnPlay.disabled = false;
 
-    // Play
-    player.play(station.url_resolved || station.url);
+        // Play
+        player.play(station.url_resolved || station.url);
 }
 
-// --- Player Callbacks ---
-function setupPlayerCallbacks() {
-    player.onPlay = () => {
-        el.playerStatus.textContent = "Reproduciendo";
-        el.playerStatus.style.color = "#0f0"; // Greenish
-        el.playIcon.textContent = "pause";
-        el.btnPlay.classList.add('playing');
-    };
+        // --- Player Callbacks ---
+        function setupPlayerCallbacks() {
+            player.onPlay = () => {
+                el.playerStatus.textContent = "Reproduciendo";
+                el.playerStatus.style.color = "#0f0"; // Greenish
+                el.playIcon.textContent = "pause";
+                el.btnPlay.classList.add('playing');
+            };
 
     player.onPause = () => {
-        el.playerStatus.textContent = "Pausado";
+            el.playerStatus.textContent = "Pausado";
         el.playerStatus.style.color = "var(--text-muted)";
         el.playIcon.textContent = "play_arrow";
         el.btnPlay.classList.remove('playing');
     };
 
     player.onError = () => {
-        el.playerStatus.textContent = "Error de conexión";
+            el.playerStatus.textContent = "Error de conexión";
         el.playerStatus.style.color = "var(--accent)";
         el.playIcon.textContent = "error_outline";
     };
 
     player.onLoadStart = () => {
-        el.playerStatus.textContent = "Buffering...";
+            el.playerStatus.textContent = "Buffering...";
     };
 
     player.onTimerEnd = () => {
-        el.playerStatus.textContent = "Zzz... (Sleep)";
+            el.playerStatus.textContent = "Zzz... (Sleep)";
         el.playerStatus.style.color = "var(--secondary)";
         el.btnSleep.classList.remove('active');
     };
 }
 
-// --- Helpers ---
-function populateSelect(selectElement, items, defaultText = "Selecciona...") {
-    selectElement.innerHTML = `<option value="" disabled selected>${defaultText}</option>`;
-    const unique = [...new Set(items)].sort();
+        // --- Helpers ---
+        function populateSelect(selectElement, items, defaultText = "Selecciona...") {
+            selectElement.innerHTML = `<option value="" disabled selected>${defaultText}</option>`;
+        const unique = [...new Set(items)].sort();
     unique.forEach(item => {
         const option = document.createElement('option');
         option.value = item;
@@ -390,7 +401,7 @@ function populateSelect(selectElement, items, defaultText = "Selecciona...") {
     });
 }
 
-function showLoader(show) {
+        function showLoader(show) {
     if (el.loader) {
         if (show) {
             el.loader.classList.remove('hidden');
@@ -400,5 +411,5 @@ function showLoader(show) {
     }
 }
 
-// Start
-init();
+        // Start
+        init();

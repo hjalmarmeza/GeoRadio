@@ -28,6 +28,70 @@
     <div class="app-background"></div>
     <div class="app-glow"></div>
 
+    <!-- Auth Overlay (Starts visible if not logged in) -->
+    <div id="auth-overlay" class="auth-overlay hidden">
+        <div class="auth-box glass-panel">
+            <div class="auth-header">
+                <span class="material-icons-round logo-icon">radio</span>
+                <h2>GEO<span class="highlight">RADIO</span></h2>
+                <p>Tu pasaporte musical global</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="form-login" class="auth-form">
+                <div class="control-group">
+                    <label>EMAIL</label>
+                    <input type="email" id="login-email" class="glass-input" placeholder="usuario@ejemplo.com" required>
+                </div>
+                <div class="control-group">
+                    <label>CONTRASEÑA</label>
+                    <input type="password" id="login-pass" class="glass-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary">ENTRAR</button>
+                <div class="auth-links">
+                    <a href="#" id="link-register">Crear cuenta nueva</a>
+                    <a href="#" id="link-forgot">¿Olvidaste tu contraseña?</a>
+                </div>
+            </form>
+
+            <!-- Register Form -->
+            <form id="form-register" class="auth-form hidden">
+                <div class="control-group">
+                    <label>NOMBRE</label>
+                    <input type="text" id="reg-name" class="glass-input" placeholder="Tu nombre" required>
+                </div>
+                <div class="control-group">
+                    <label>EMAIL</label>
+                    <input type="email" id="reg-email" class="glass-input" placeholder="usuario@ejemplo.com" required>
+                </div>
+                <div class="control-group">
+                    <label>CONTRASEÑA</label>
+                    <input type="password" id="reg-pass" class="glass-input" placeholder="Crear contraseña" required>
+                </div>
+                <button type="submit" class="btn-primary">REGISTRARSE</button>
+                <div class="auth-links">
+                    <a href="#" id="link-login">Ya tengo cuenta</a>
+                </div>
+            </form>
+
+            <!-- Forgot Pass Form -->
+            <form id="form-forgot" class="auth-form hidden">
+                <p class="auth-desc">Ingresa tu email y te enviaremos una nueva contraseña provisional.</p>
+                <div class="control-group">
+                    <label>EMAIL</label>
+                    <input type="email" id="forgot-email" class="glass-input" placeholder="usuario@ejemplo.com"
+                        required>
+                </div>
+                <button type="submit" class="btn-primary">RECUPERAR</button>
+                <div class="auth-links">
+                    <a href="#" id="link-back-login">Volver al login</a>
+                </div>
+            </form>
+
+            <div id="auth-message" class="auth-message hidden"></div>
+        </div>
+    </div>
+
     <header class="main-header">
         <div class="logo">
             <span class="material-icons-round logo-icon">radio</span>
