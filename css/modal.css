@@ -1,0 +1,69 @@
+/* ... Previous styles up to mobile nav ... */
+/* ADDED: Modal Styles for Timer */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.modal {
+    background: var(--bg-deep);
+    border: 1px solid var(--glass-border);
+    padding: 2rem;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 320px;
+    text-align: center;
+    box-shadow: 0 0 50px rgba(0, 243, 255, 0.1);
+}
+
+.modal h3 {
+    margin-bottom: 1.5rem;
+    font-family: var(--font-heading);
+    color: var(--primary);
+}
+
+.timer-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.btn-timer {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+    padding: 1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: all 0.2s;
+}
+
+.btn-timer:hover {
+    border-color: var(--primary);
+    background: rgba(0, 243, 255, 0.1);
+}
+
+.btn-close-modal {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+/* Add style for active timer button */
+#btn-sleep.active {
+    color: var(--secondary);
+    text-shadow: 0 0 10px var(--secondary);
+}
