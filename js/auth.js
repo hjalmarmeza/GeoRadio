@@ -35,12 +35,14 @@ export const Auth = {
         document.getElementById('form-login').onsubmit = (e) => this.handleLogin(e);
         document.getElementById('form-register').onsubmit = (e) => this.handleRegister(e);
         document.getElementById('form-forgot').onsubmit = (e) => this.handleForgot(e);
+        document.getElementById('form-change-pass').onsubmit = (e) => this.handleChangePassword(e);
     },
 
     toggleForms(view) {
         const login = document.getElementById('form-login');
         const reg = document.getElementById('form-register');
         const forgot = document.getElementById('form-forgot');
+        const changePass = document.getElementById('form-change-pass');
 
         const msg = document.getElementById('auth-message');
         msg.classList.add('hidden');
@@ -49,10 +51,12 @@ export const Auth = {
         login.classList.add('hidden');
         reg.classList.add('hidden');
         forgot.classList.add('hidden');
+        changePass.classList.add('hidden');
 
         if (view === 'login') login.classList.remove('hidden');
         else if (view === 'register') reg.classList.remove('hidden');
         else if (view === 'forgot') forgot.classList.remove('hidden');
+        else if (view === 'change-pass') changePass.classList.remove('hidden');
     },
 
     async handleLogin(e) {
@@ -87,25 +91,57 @@ export const Auth = {
             }
 
             const res = await fetch(`${API_URL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(pass)}`, {
-                method: 'POST' // Use POST to avoid sending pass in URL log, though GAS handles GET parameters easier sometimes. 
-                // Actually standard GAS fetch usually sends data in payload. 
-                // For simplicity with the provided script, we use GET parameters approach or POST payload.
-                // Let's stick to the URL parameters for this simple setup as defined in Apps Script `e.parameter`.
+                method: 'POST'
             });
 
             const data = await res.json();
 
             if (data.status === 'success') {
-                this.loginSuccess(data.user);
+                // Check if Forced Password Reset is needed
+                if (data.user.mustChangePassword) {
+                    this.pendingUser = data.user; // Store temp user
+                    this.toggleForms('change-pass');
+                } else {
+                    this.loginSuccess(data.user);
+                }
             } else {
                 this.showError(data.message);
             }
 
         } catch (err) {
             console.error(err);
-            // Fallback for demo if script fails (CORS issues commonly happen with GAS if not redirected properly)
-            // Ideally we'd fix CORS.
             this.showError("Error de conexión con el servidor.");
+        } finally {
+            this.setLoading(btn, false);
+        }
+    },
+
+    async handleChangePassword(e) {
+        e.preventDefault();
+        const newPass = document.getElementById('new-pass-input').value;
+        const btn = e.target.querySelector('button');
+
+        if (!newPass || newPass.length < 6) {
+            this.showError("La contraseña debe tener al menos 6 caracteres.");
+            return;
+        }
+
+        this.setLoading(btn, true);
+
+        try {
+            const res = await fetch(`${API_URL}?action=change_password&email=${encodeURIComponent(this.pendingUser.email)}&new_password=${encodeURIComponent(newPass)}`, {
+                method: 'POST'
+            });
+            const data = await res.json();
+
+            if (data.status === 'success') {
+                // Now allow entry
+                this.loginSuccess(this.pendingUser);
+            } else {
+                this.showError(data.message);
+            }
+        } catch (err) {
+            this.showError("Error al actualizar contraseña.");
         } finally {
             this.setLoading(btn, false);
         }
@@ -180,6 +216,7 @@ export const Auth = {
 
     logout() {
         this.user = null;
+        this.pendingUser = null;
         localStorage.removeItem('georadio_user');
         this.showOverlay();
         this.toggleForms('login');

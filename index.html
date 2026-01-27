@@ -74,7 +74,6 @@
                 </div>
             </form>
 
-            <!-- Forgot Pass Form -->
             <form id="form-forgot" class="auth-form hidden">
                 <p class="auth-desc">Ingresa tu email y te enviaremos una nueva contraseña provisional.</p>
                 <div class="control-group">
@@ -86,6 +85,18 @@
                 <div class="auth-links">
                     <a href="#" id="link-back-login">Volver al login</a>
                 </div>
+            </form>
+
+            <!-- Change Password Form (Forced) -->
+            <form id="form-change-pass" class="auth-form hidden">
+                <div class="auth-message" style="margin-bottom: 1rem;">⚠️ Paso de Seguridad</div>
+                <p class="auth-desc">Estás usando una contraseña temporal. Por favor crea una nueva para continuar.</p>
+                <div class="control-group">
+                    <label>NUEVA CONTRASEÑA</label>
+                    <input type="password" id="new-pass-input" class="glass-input" placeholder="Mínimo 6 caracteres"
+                        required minlength="6">
+                </div>
+                <button type="submit" class="btn-primary">GUARDAR Y ENTRAR</button>
             </form>
 
             <div id="auth-message" class="auth-message hidden"></div>
