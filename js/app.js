@@ -182,6 +182,15 @@ function setupEventListeners() {
             el.timerModal.classList.add('hidden');
         });
     });
+
+    // Logout
+    const btnLogout = document.getElementById('btn-logout');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', () => {
+            Auth.logout();
+            toggleFilters(false); // Close drawer
+        });
+    }
 }
 
 // --- Logic ---

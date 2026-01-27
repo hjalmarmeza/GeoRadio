@@ -38,7 +38,7 @@
             </div>
 
             <!-- Login Form -->
-            <form id="form-login" class="auth-form">
+            <form id="form-login" class="auth-form" novalidate>
                 <div class="control-group">
                     <label>EMAIL O USUARIO</label>
                     <input type="text" id="login-email" class="glass-input" placeholder="usuario@ejemplo.com" required>
@@ -137,6 +137,14 @@
                     <span class="stat-label">EMISORAS</span>
                 </div>
             </div>
+
+            <div class="decor-line"></div>
+
+            <!-- Logout Button -->
+            <button id="btn-logout" class="btn-link-danger">
+                <span class="material-icons-round">logout</span>
+                Cerrar Sesión
+            </button>
         </aside>
 
         <section class="stations-grid-container" id="stations-container">
