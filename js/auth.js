@@ -3,7 +3,7 @@
  */
 
 // THIS URL WILL BE PROVIDED BY THE USER AFTER DEPLOYMENT
-const API_URL = "https://script.google.com/macros/s/AKfycbwgB1XOOdRJ_DwESkckmGKhEKSzwx1ceYN1AePqf538ndugXnSr-b1KFokBzwk5N-me/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwMr1zDSXijKHEF2gltuLOJTGAflMjQh90Z9tiwdARk3SfCCfg8ehTyhVa1vN5bTIzb/exec";
 
 export const Auth = {
     user: null,
