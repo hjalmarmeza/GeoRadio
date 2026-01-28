@@ -26,8 +26,9 @@ const state = {
 // --- DOM Elements ---
 const el = {
     countrySelect: document.getElementById('country-select'),
-    btnFavCountry: document.getElementById('btn-fav-country'), // New Fav Btn
+    btnFavCountry: document.getElementById('btn-fav-country'),
     citySelect: document.getElementById('city-select'),
+    btnFavCity: document.getElementById('btn-fav-city'), // New Fav City Btn
     cityGroup: document.getElementById('city-group'),
     stationsGrid: document.getElementById('stations-grid'),
     favoritesGrid: document.getElementById('favorites-grid'),
@@ -137,12 +138,16 @@ function setupEventListeners() {
         toggleSearch(false);
         el.searchInput.value = '';
         // showLoader(false);
+        // Reset city favorite button
+        updateFavCityButton(null);
     });
 
     // City Change
     el.citySelect.addEventListener('change', async (e) => {
         const city = e.target.value;
         state.selectedCity = city;
+
+        updateFavCityButton(city); // Update Star
 
         if (window.innerWidth <= 768) {
             toggleFilters(false);
@@ -192,6 +197,18 @@ function setupEventListeners() {
 
             const added = Storage.toggleFavoriteCountry(country);
             updateFavCountryButton(country);
+        });
+    }
+
+    // Fav City Click
+    if (el.btnFavCity) {
+        el.btnFavCity.addEventListener('click', () => {
+            const city = el.citySelect.value;
+            const country = state.selectedCountry;
+            if (!city || !country) return;
+
+            Storage.toggleFavoriteCity({ name: city, country: country });
+            updateFavCityButton(city);
         });
     }
 }
@@ -331,8 +348,17 @@ function switchView(viewName) {
     // Update Content UI & Logic
     if (viewName === 'explore') {
         el.viewExplore.classList.remove('hidden');
-        el.gridTitle.textContent = state.selectedCity ? `${state.selectedCity}, ${state.selectedCountry}` : 'Explora el mundo';
-        renderStationsList(el.stationsGrid, state.stations);
+
+        // Restore title or default
+        if (state.stations.length > 0 && state.selectedCity) {
+            el.gridTitle.textContent = `${state.selectedCity}, ${state.selectedCountry}`;
+            renderStationsList(el.stationsGrid, state.stations);
+        } else {
+            el.gridTitle.textContent = 'Explora el mundo';
+            // If state has stations but no city selected (rare), just show them
+            if (state.stations.length > 0) renderStationsList(el.stationsGrid, state.stations);
+            else renderStationsList(el.stationsGrid, []); // Show empty state
+        }
     } else if (viewName === 'favorites') {
         el.viewFavorites.classList.remove('hidden');
         el.gridTitle.textContent = 'Mis Favoritos';
@@ -591,6 +617,27 @@ function updateFavCountryButton(countryName) {
         icon.textContent = 'star';
     } else {
         el.btnFavCountry.classList.remove('active');
+        icon.textContent = 'star_border';
+    }
+}
+
+function updateFavCityButton(cityName) {
+    if (!el.btnFavCity) return;
+
+    if (!cityName || !state.selectedCountry) {
+        el.btnFavCity.classList.add('hidden');
+        return;
+    }
+    el.btnFavCity.classList.remove('hidden');
+
+    const isFav = Storage.isFavoriteCity(cityName, state.selectedCountry);
+    const icon = el.btnFavCity.querySelector('span');
+
+    if (isFav) {
+        el.btnFavCity.classList.add('active');
+        icon.textContent = 'star';
+    } else {
+        el.btnFavCity.classList.remove('active');
         icon.textContent = 'star_border';
     }
 }

@@ -146,7 +146,12 @@
             </div>
 
             <div class="control-group disabled" id="city-group">
-                <label for="city-select">CIUDAD</label>
+                <div class="label-row">
+                    <label for="city-select">CIUDAD</label>
+                    <button id="btn-fav-city" class="btn-icon-small hidden" title="Añadir a favoritos">
+                        <span class="material-icons-round">star_border</span>
+                    </button>
+                </div>
                 <div class="custom-select-wrapper">
                     <select id="city-select" class="glass-input" disabled>
                         <option value="" disabled selected>Esperando país...</option>
