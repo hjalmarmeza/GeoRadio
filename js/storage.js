@@ -58,6 +58,14 @@ export const Storage = {
         return existingIndex === -1;
     },
 
+    getTheme() {
+        return localStorage.getItem('georadio_theme') || 'cyan';
+    },
+
+    setTheme(theme) {
+        localStorage.setItem('georadio_theme', theme);
+    },
+
     isFavoriteCity(cityName, countryName) {
         const favs = this.getFavoriteCities();
         return favs.some(c => c.name === cityName && c.country === countryName);

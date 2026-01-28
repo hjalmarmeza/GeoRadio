@@ -1176,3 +1176,84 @@ body {
     box-shadow: 0 0 20px var(--primary-glow);
     border-color: var(--primary);
 }
+
+/* =========================================
+   IMMERSIVE MODE (ZEN)
+   ========================================= */
+body.immersive-mode {
+    overflow: hidden;
+}
+
+body.immersive-mode .main-sidebar,
+body.immersive-mode .main-header,
+body.immersive-mode .app-grid,
+body.immersive-mode .filters-panel, 
+body.immersive-mode .auth-overlay {
+    display: none !important;
+}
+
+body.immersive-mode .player-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    flex-direction: column;
+    justify-content: center;
+    background: radial-gradient(circle at center, var(--bg-deep) 0%, #000 100%);
+    padding: 2rem;
+    gap: 2rem;
+}
+
+body.immersive-mode #visualizer-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.6;
+    pointer-events: none;
+    z-index: 0;
+}
+
+body.immersive-mode .now-playing {
+    flex: 0 0 auto;
+    flex-direction: column;
+    text-align: center;
+    z-index: 2;
+    transform: scale(1.5);
+    margin: 0 auto;
+}
+
+body.immersive-mode .now-playing img {
+    width: 150px;
+    height: 150px;
+    margin-bottom: 1rem;
+    box-shadow: 0 0 50px rgba(0,0,0,0.5);
+}
+
+body.immersive-mode .player-controls {
+    flex: 0 0 auto;
+    z-index: 2;
+    transform: scale(1.5);
+    justify-content: center;
+    width: 100%;
+    margin-top: 2rem;
+}
+
+body.immersive-mode .volume-control,
+body.immersive-mode .player-extra-controls {
+    display: none; /* Hide extra controls in Zen mode for purity */
+}
+
+/* Close Zen Mode Button (Using the fullscreen button) */
+body.immersive-mode #btn-zen-mode {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    z-index: 10;
+    transform: scale(1.5);
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+}

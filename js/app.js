@@ -67,7 +67,9 @@ const el = {
 
     // Sidebar
     btnViewRecents: document.getElementById('btn-view-recents'),
+    btnViewRecents: document.getElementById('btn-view-recents'),
     btnViewMapSidebar: document.getElementById('btn-view-map-sidebar'), // New Desktop Map Btn
+    btnThemeToggle: document.getElementById('btn-theme-toggle'), // New Theme Btn
 
     // Modals
     timerModal: document.getElementById('timer-modal'),
@@ -87,6 +89,7 @@ const player = new RadioPlayer();
 // --- Initialization ---
 async function init() {
     Auth.init(); // Initialize Auth System
+    applyTheme(Storage.getTheme()); // Apply saved theme
 
     setupEventListeners();
     setupPlayerCallbacks();
@@ -222,6 +225,27 @@ if (el.btnViewRecents) {
     el.btnViewRecents.addEventListener('click', () => {
         switchView('history');
         toggleFilters(false);
+    });
+}
+
+// Theme Toggle
+if (el.btnThemeToggle) {
+    el.btnThemeToggle.addEventListener('click', () => {
+        const currentCheck = Storage.getTheme();
+        const themes = ['cyan', 'purple', 'gold', 'neon_green'];
+        let idx = themes.indexOf(currentCheck);
+        idx = (idx + 1) % themes.length;
+        const newTheme = themes[idx];
+        applyTheme(newTheme);
+        Storage.setTheme(newTheme);
+    });
+}
+
+// Zen Mode Toggle
+const btnZenMode = document.getElementById('btn-zen-mode');
+if (btnZenMode) {
+    btnZenMode.addEventListener('click', () => {
+        document.body.classList.toggle('immersive-mode');
     });
 }
 
@@ -667,6 +691,22 @@ function updateFavCityButton(cityName) {
         el.btnFavCity.classList.remove('active');
         icon.textContent = 'star_border';
     }
+}
+
+// --- Themes ---
+function applyTheme(themeName) {
+    const root = document.documentElement;
+    const themes = {
+        cyan: { primary: '#00f3ff', secondary: '#bc13fe', accent: '#ff0055' },
+        purple: { primary: '#d946ef', secondary: '#8b5cf6', accent: '#06b6d4' },
+        gold: { primary: '#fbbf24', secondary: '#f59e0b', accent: '#ea580c' },
+        neon_green: { primary: '#39ff14', secondary: '#ccff00', accent: '#ff00cc' }
+    };
+
+    const t = themes[themeName] || themes['cyan'];
+    root.style.setProperty('--primary', t.primary);
+    root.style.setProperty('--secondary', t.secondary);
+    root.style.setProperty('--accent', t.accent);
 }
 
 // Start
