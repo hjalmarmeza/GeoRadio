@@ -87,8 +87,6 @@ async function init() {
 
     // Load Countries
     showLoader(true);
-    // Load Countries
-    showLoader(true);
     const countries = await API.getCountries();
     populateSelect(el.countrySelect, countries.map(c => c.name), "Selecciona...", true);
     showLoader(false);
@@ -570,91 +568,6 @@ function normalizeText(text) {
 }
 
 // --- Map Logic ---
-function initMap() {
-    try {
-        if (mapInstance) {
-            setTimeout(() => {
-                try { mapInstance.invalidateSize(); } catch (e) { console.error(e); }
-            }, 100);
-            return;
-        }
-
-        if (typeof L === 'undefined') {
-            console.error("Leaflet not loaded");
-            return;
-        }
-
-        // Check if element exists/visible
-        if (!document.getElementById('geo-map')) return;
-
-        // Init Map
-        mapInstance = L.map('geo-map', {
-            zoomControl: false,
-            attributionControl: false
-        }).setView([20, 0], 2);
-
-        // Dark Matter Tiles
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap &copy; CARTO',
-            subdomains: 'abcd',
-            maxZoom: 19
-        }).addTo(mapInstance);
-
-        L.control.zoom({ position: 'bottomright' }).addTo(mapInstance);
-
-        // Show contents
-        if (state.stations.length > 0) {
-            updateMapMarkers(state.stations);
-        } else {
-            updateMapMarkers(state.trends);
-        }
-    } catch (err) {
-        console.error("Map Init Failed:", err);
-    }
-}
-
-function updateMapMarkers(stations) {
-    if (!mapInstance) return;
-
-    // Clear existing
-    parkingMarkers.forEach(m => m.remove());
-    parkingMarkers = [];
-
-    if (!stations) return;
-
-    // Create bounds
-    const bounds = L.latLngBounds();
-    let hasPoints = false;
-
-    stations.forEach(station => {
-        if (station.geo_lat && station.geo_long) {
-            // Custom Icon
-            const icon = L.divIcon({
-                className: 'map-marker',
-                html: `<div style="width:10px; height:10px; background:var(--primary); border-radius:50%; box-shadow:0 0 10px var(--primary);"></div>`,
-                iconSize: [10, 10],
-                iconAnchor: [5, 5]
-            });
-
-            const marker = L.marker([station.geo_lat, station.geo_long], { icon: icon })
-                .addTo(mapInstance)
-                .bindPopup(`<b>${station.name}</b><br>${station.country}`);
-
-            marker.on('click', () => {
-                playStation(station);
-            });
-
-            parkingMarkers.push(marker);
-            bounds.extend([station.geo_lat, station.geo_long]);
-            hasPoints = true;
-        }
-    });
-
-    if (hasPoints) {
-        mapInstance.fitBounds(bounds, { padding: [50, 50], maxZoom: 8 });
-    }
-}
-
 function updateFavCountryButton(countryName) {
     if (!el.btnFavCountry) return;
 
