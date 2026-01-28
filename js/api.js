@@ -1,76 +1,64 @@
+// List of Available Servers
 const SERVERS = [
     'https://de1.api.radio-browser.info/json',
-    'https://fr1.api.radio-browser.info/json',
     'https://at1.api.radio-browser.info/json',
     'https://nl1.api.radio-browser.info/json',
     'https://api.radio-browser.info/json'
 ];
 
-let activeBaseUrl = 'https://de1.api.radio-browser.info/json';
-let serverReady = resolveBaseUrl();
-
 /**
- * Check which server is alive (Latency Check)
+ * Generic FetchWrapper that retries across servers if one fails.
  */
-async function resolveBaseUrl() {
-    const promises = SERVERS.map(server =>
-        fetch(`${server}/stats`)
-            .then(r => r.ok ? server : Promise.reject())
-            .catch(() => Promise.reject())
-    );
+async function fetchWithFallback(endpoint) {
+    for (const server of SERVERS) {
+        try {
+            const url = `${server}${endpoint}`;
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 4000); // 4s timeout per server
 
-    try {
-        activeBaseUrl = await Promise.any(promises);
-        console.log('Selected API Server:', activeBaseUrl);
-    } catch (err) {
-        console.warn('All API servers failed, fallback to default:', activeBaseUrl);
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            if (response.ok) {
+                return await response.json();
+            }
+        } catch (err) {
+            console.warn(`Server ${server} unreachable, trying next...`);
+            continue;
+        }
     }
+    console.error("All API servers failed.");
+    return []; // Return empty array if all fail
 }
 
 export async function getCountries() {
-    try {
-        await serverReady;
-        const response = await fetch(`${activeBaseUrl}/countries?order=stationcount&reverse=true`);
-        if (!response.ok) throw new Error(response.statusText);
-        return await response.json();
-    } catch (error) {
-        console.error('getCountries failed:', error);
-        return [];
-    }
+    return await fetchWithFallback('/countries?order=stationcount&reverse=true&limit=100'); // Limit to top 100 to load faster initially
 }
 
 export async function getCities(countryName) {
     if (!countryName) return [];
 
-    try {
-        await serverReady;
-        const url = `${activeBaseUrl}/stations/search?country=${encodeURIComponent(countryName)}&hidebroken=true&order=clickcount&reverse=true&limit=500`;
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Stations fetch failed');
-        const stations = await response.json();
+    // Fetch stations to extract cities (Radio-Browser doesn't have a clean cities endpoint by country)
+    const stations = await fetchWithFallback(`/stations/search?country=${encodeURIComponent(countryName)}&hidebroken=true&limit=400`);
 
-        const cityMap = new Map();
-        stations.forEach(station => {
-            let city = station.city || station.state || '';
-            city = city.trim();
-            if (city.length > 2) {
-                city = city.charAt(0).toUpperCase() + city.slice(1);
-                if (!cityMap.has(city)) {
-                    cityMap.set(city, 1);
-                } else {
-                    cityMap.set(city, cityMap.get(city) + 1);
-                }
-            }
-        });
-        const citiesArray = Array.from(cityMap.entries()).map(([name, count]) => ({
-            name: name,
-            stationcount: count
-        }));
-        return citiesArray.sort((a, b) => b.stationcount - a.stationcount);
-    } catch (error) {
-        console.error('getCities fallback failed:', error);
-        return [];
-    }
+    if (!stations || !Array.isArray(stations)) return [];
+
+    const cityMap = new Map();
+    stations.forEach(station => {
+        let city = station.city || station.state || '';
+        city = city.trim();
+        if (city.length > 2) {
+            city = city.charAt(0).toUpperCase() + city.slice(1);
+            cityMap.set(city, (cityMap.get(city) || 0) + 1);
+        }
+    });
+
+    const citiesArray = Array.from(cityMap.entries()).map(([name, count]) => ({
+        name: name,
+        stationcount: count
+    }));
+
+    return citiesArray.sort((a, b) => b.stationcount - a.stationcount);
 }
 
 // --- WHATSAPP DIRECTORY (Local Override) ---
@@ -148,30 +136,15 @@ function enrichWithWhatsApp(stations) {
 }
 
 export async function getTopStations(limit = 50) {
-    try {
-        await serverReady;
-        const url = `${activeBaseUrl}/stations/search?hidebroken=true&order=clickcount&reverse=true&limit=${limit}`;
-        const response = await fetch(url);
-        const data = await response.json();
-        return enrichWithWhatsApp(data);
-    } catch (error) {
-        console.error('getTopStations failed:', error);
-        return [];
-    }
+    const data = await fetchWithFallback(`/stations/search?hidebroken=true&order=clickcount&reverse=true&limit=${limit}`);
+    return enrichWithWhatsApp(data || []);
 }
 
 export async function getStations(countryName, cityName, limit = 100) {
-    try {
-        let url = `${activeBaseUrl}/stations/search?country=${encodeURIComponent(countryName)}&hidebroken=true&order=clickcount&reverse=true&limit=${limit}`;
-        if (cityName) {
-            url += `&city=${encodeURIComponent(cityName)}`;
-        }
-        await serverReady;
-        const response = await fetch(url);
-        const data = await response.json();
-        return enrichWithWhatsApp(data);
-    } catch (error) {
-        console.error('getStations failed:', error);
-        return [];
+    let endpoint = `/stations/search?country=${encodeURIComponent(countryName)}&hidebroken=true&order=clickcount&reverse=true&limit=${limit}`;
+    if (cityName) {
+        endpoint += `&city=${encodeURIComponent(cityName)}`;
     }
+    const data = await fetchWithFallback(endpoint);
+    return enrichWithWhatsApp(data || []);
 }
