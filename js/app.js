@@ -71,8 +71,6 @@ const el = {
 
 // --- Player Instance ---
 const player = new RadioPlayer();
-let mapInstance = null;
-let parkingMarkers = [];
 
 // --- Initialization ---
 async function init() {
@@ -170,68 +168,57 @@ function setupEventListeners() {
     });
 
     // Navigation
-    if (el.navExplore) {
-        el.navExplore.addEventListener('click', () => switchView('explore'));
-        el.navFavorites.addEventListener('click', () => switchView('favorites'));
-        el.navTrends.addEventListener('click', () => switchView('trends'));
-        el.navFilterToggle.addEventListener('click', () => toggleFilters());
+    el.navExplore.addEventListener('click', () => switchView('explore'));
+    el.navFavorites.addEventListener('click', () => switchView('favorites'));
+    el.navTrends.addEventListener('click', () => switchView('trends'));
+    el.navFilterToggle.addEventListener('click', () => toggleFilters());
+}
 
-        // New Nav
-        if (el.navMap) el.navMap.addEventListener('click', () => switchView('map'));
-    }
-
-    // New Sidebar Buttons
-    if (el.btnViewRecents) {
-        el.btnViewRecents.addEventListener('click', () => {
-            switchView('history');
-            toggleFilters(false);
-        });
-    }
-
-    if (el.btnViewMapSidebar) {
-        el.btnViewMapSidebar.addEventListener('click', () => {
-            switchView('map');
-            // Do not close filters on desktop map view necessarily, but we can
-        });
-    }
-
-    // EQ Logic
-    if (el.btnEq && el.btnCloseEq && el.eqModal) {
-        el.btnEq.addEventListener('click', () => el.eqModal.classList.remove('hidden'));
-        el.btnCloseEq.addEventListener('click', () => el.eqModal.classList.add('hidden'));
-    }
-
-    // Timer Logic
-    el.btnSleep.addEventListener('click', () => {
-        el.timerModal.classList.remove('hidden');
+// New Sidebar Buttons
+if (el.btnViewRecents) {
+    el.btnViewRecents.addEventListener('click', () => {
+        switchView('history');
+        toggleFilters(false);
     });
+}
 
-    el.btnCloseTimer.addEventListener('click', () => {
+// EQ Logic
+if (el.btnEq && el.btnCloseEq && el.eqModal) {
+    el.btnEq.addEventListener('click', () => el.eqModal.classList.remove('hidden'));
+    el.btnCloseEq.addEventListener('click', () => el.eqModal.classList.add('hidden'));
+}
+
+// Timer Logic
+el.btnSleep.addEventListener('click', () => {
+    el.timerModal.classList.remove('hidden');
+});
+
+el.btnCloseTimer.addEventListener('click', () => {
+    el.timerModal.classList.add('hidden');
+});
+
+el.timerOptions.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const mins = parseInt(e.target.dataset.time);
+        if (mins === 0) {
+            player.cancelSleepTimer();
+            el.btnSleep.classList.remove('active');
+        } else {
+            player.startSleepTimer(mins);
+            el.btnSleep.classList.add('active');
+        }
         el.timerModal.classList.add('hidden');
     });
+});
 
-    el.timerOptions.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const mins = parseInt(e.target.dataset.time);
-            if (mins === 0) {
-                player.cancelSleepTimer();
-                el.btnSleep.classList.remove('active');
-            } else {
-                player.startSleepTimer(mins);
-                el.btnSleep.classList.add('active');
-            }
-            el.timerModal.classList.add('hidden');
-        });
+// Logout
+const btnLogout = document.getElementById('btn-logout');
+if (btnLogout) {
+    btnLogout.addEventListener('click', () => {
+        Auth.logout();
+        toggleFilters(false); // Close drawer
     });
-
-    // Logout
-    const btnLogout = document.getElementById('btn-logout');
-    if (btnLogout) {
-        btnLogout.addEventListener('click', () => {
-            Auth.logout();
-            toggleFilters(false); // Close drawer
-        });
-    }
+}
 }
 
 // --- Logic ---
@@ -271,13 +258,14 @@ function switchView(viewName) {
     el.navExplore.classList.toggle('active', viewName === 'explore');
     el.navFavorites.classList.toggle('active', viewName === 'favorites');
     el.navTrends.classList.toggle('active', viewName === 'trends');
-    if (el.navMap) el.navMap.classList.toggle('active', viewName === 'map'); // Map Active State
+    el.navExplore.classList.toggle('active', viewName === 'explore');
+    el.navFavorites.classList.toggle('active', viewName === 'favorites');
+    el.navTrends.classList.toggle('active', viewName === 'trends');
 
     // Default hiding
     el.viewExplore.classList.add('hidden');
     el.viewFavorites.classList.add('hidden');
     el.viewTrends.classList.add('hidden');
-    el.viewMap.classList.add('hidden');     // Hide Map
     el.viewRecents.classList.add('hidden'); // Hide Recents
 
     // Update Content UI & Logic
@@ -297,10 +285,6 @@ function switchView(viewName) {
         el.viewRecents.classList.remove('hidden');
         el.gridTitle.textContent = 'Escuchado Recientemente';
         loadRecents();
-    } else if (viewName === 'map') { // Map View
-        el.viewMap.classList.remove('hidden');
-        el.gridTitle.textContent = 'Mapa Global';
-        initMap();
     }
 
     toggleFilters(false);
@@ -309,13 +293,11 @@ function switchView(viewName) {
 function loadFavorites() {
     const favs = Storage.getFavoriteStations();
     renderStationsList(el.favoritesGrid, favs, true);
-    updateMapMarkers(favs); // Show favs on map if map active
 }
 
 function loadRecents() {
     const recents = Storage.getRecents();
     renderStationsList(el.recentsGrid, recents);
-    updateMapMarkers(recents);
 }
 
 function toggleFilters(forceState) {
