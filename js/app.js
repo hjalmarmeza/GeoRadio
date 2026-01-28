@@ -67,7 +67,13 @@ const el = {
     // Modals
     timerModal: document.getElementById('timer-modal'),
     btnCloseTimer: document.getElementById('btn-close-timer'),
-    timerOptions: document.querySelectorAll('.btn-timer')
+    timerOptions: document.querySelectorAll('.btn-timer'),
+
+    // EQ & Visualizer
+    visualizerCanvas: document.getElementById('visualizer-canvas'),
+    btnEq: document.getElementById('btn-eq'),
+    eqModal: document.getElementById('eq-modal'),
+    btnCloseEq: document.getElementById('btn-close-eq')
 };
 
 // --- Player Instance ---
