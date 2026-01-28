@@ -78,7 +78,9 @@ async function init() {
     setupPlayerCallbacks();
 
     // Init Visualizer
-    player.startVisualizer(el.visualizerCanvas);
+    if (typeof player.startVisualizer === 'function') {
+        player.startVisualizer(el.visualizerCanvas);
+    }
 
     // Load Countries
     showLoader(true);
