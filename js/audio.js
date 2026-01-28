@@ -147,7 +147,11 @@ export class RadioPlayer {
                     // Amplitude peaks in middle, tapers at ends
                     const envelope = Math.pow(Math.sin(nx * Math.PI), 2);
 
-                    const yOffset = (wave1 * 15 + wave2 * 10 + wave3 * 20) * envelope;
+                    // Check for Immersive Mode
+                    const isImmersive = document.body.classList.contains('immersive-mode');
+                    const ampMultiplier = isImmersive ? 4.0 : 1.0; // 4x amplitude in Zen Mode!
+
+                    const yOffset = (wave1 * 15 + wave2 * 10 + wave3 * 20) * envelope * ampMultiplier;
 
                     if (x === 0) ctx.moveTo(x, centerY + yOffset);
                     else ctx.lineTo(x, centerY + yOffset);

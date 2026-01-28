@@ -1339,3 +1339,54 @@ html, body {
         padding-right: 5px;
     }
 }
+
+/* --- SUPER IMMERSIVE MODE UPDATES --- */
+
+/* 1. Make Logo Huge */
+body.immersive-mode .now-playing img {
+    width: 280px !important;    /* Much bigger */
+    height: 280px !important;
+    margin-bottom: 2rem !important;
+    transform: scale(1.2);      /* Extra pop */
+    box-shadow: 0 0 80px rgba(0, 243, 255, 0.3) !important; /* Larger glow */
+}
+
+/* 2. Tiny Exit Button */
+body.immersive-mode #btn-zen-mode {
+    width: 30px !important;    /* Smaller */
+    height: 30px !important;
+    top: 30px !important;
+    right: 30px !important;
+    opacity: 0.4;              /* Fade it out so it's not distracting */
+    border: none !important;
+    background: transparent !important;
+    transition: opacity 0.3s;
+}
+
+body.immersive-mode #btn-zen-mode:hover {
+    opacity: 1;
+    background: rgba(255,255,255,0.1) !important;
+}
+
+body.immersive-mode #btn-zen-mode .material-icons-round {
+    font-size: 1.2rem !important; /* Smaller icon */
+}
+
+/* 3. Massive Sound Graph */
+body.immersive-mode #visualizer-canvas {
+    height: 120% !important; /* Taller than screen to cover everything */
+    opacity: 0.9 !important; /* Very visible */
+    transform: scaleY(1.5);  /* Stretch vertically for drama */
+}
+
+/* Adjust text size for balance */
+body.immersive-mode #player-station-name {
+    font-size: 2rem !important;
+    font-weight: 800;
+    text-shadow: 0 0 20px rgba(0,0,0,0.8);
+}
+
+body.immersive-mode #player-status {
+    font-size: 1.2rem !important;
+    margin-top: 0.5rem;
+}
