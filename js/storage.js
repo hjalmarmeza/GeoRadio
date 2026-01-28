@@ -1,6 +1,7 @@
 const KEYS = {
     FAV_STATIONS: 'neon_fav_stations',
-    FAV_CITIES: 'neon_fav_cities'
+    FAV_CITIES: 'neon_fav_cities',
+    RECENTS: 'neon_recent_stations'
 };
 
 export const Storage = {
@@ -60,5 +61,34 @@ export const Storage = {
     isFavoriteCity(cityName, countryName) {
         const favs = this.getFavoriteCities();
         return favs.some(c => c.name === cityName && c.country === countryName);
+    },
+
+    // --- Recents ---
+    getRecents() {
+        const data = localStorage.getItem(KEYS.RECENTS);
+        return data ? JSON.parse(data) : [];
+    },
+
+    addRecent(station) {
+        let recents = this.getRecents();
+        // Remove if exists to bubble to top
+        recents = recents.filter(s => s.stationuuid !== station.stationuuid);
+
+        // Add to front
+        recents.unshift({
+            stationuuid: station.stationuuid,
+            name: station.name,
+            url: station.url,
+            url_resolved: station.url_resolved,
+            favicon: station.favicon,
+            tags: station.tags,
+            country: station.country, // Useful for map context if needed later
+            whatsapp: station.whatsapp
+        });
+
+        // Limit to 20
+        if (recents.length > 20) recents.pop();
+
+        localStorage.setItem(KEYS.RECENTS, JSON.stringify(recents));
     }
 };

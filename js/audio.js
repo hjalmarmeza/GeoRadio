@@ -79,4 +79,50 @@ export class RadioPlayer {
             this.sleepTimerId = null;
         }
     }
+
+    // --- Visualizer (Simulation) ---
+    startVisualizer(canvas) {
+        if (!canvas) return;
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        this.bars = 30; // Number of bars
+        this._animateVisualizer();
+    }
+
+    _animateVisualizer() {
+        const draw = () => {
+            this.animationId = requestAnimationFrame(draw);
+
+            if (!this.ctx || !this.canvas) return;
+
+            const w = this.canvas.width = this.canvas.offsetWidth;
+            const h = this.canvas.height = this.canvas.offsetHeight;
+            const ctx = this.ctx;
+
+            ctx.clearRect(0, 0, w, h);
+
+            if (!this.isPlaying) return;
+
+            // Draw Bars
+            const barW = w / this.bars;
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#00f3ff';
+
+            for (let i = 0; i < this.bars; i++) {
+                // Simulated frequency data
+                // Combine sine waves and random noise for "organic" look
+                const time = Date.now() / 200;
+                const hScale = Math.sin(i * 0.2 + time) * 0.5 + 0.5; // 0 to 1
+                const noise = Math.random() * 0.5;
+                const magnitude = (hScale * 0.7 + noise * 0.3) * h * 0.8; // Peak at 80% height
+
+                const x = i * barW;
+                const y = h - magnitude;
+
+                // Gradient opacity
+                ctx.globalAlpha = 0.3 + (magnitude / h) * 0.7;
+                ctx.fillRect(x, y, barW - 2, magnitude);
+            }
+        };
+        draw();
+    }
 }

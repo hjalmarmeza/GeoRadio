@@ -22,6 +22,12 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="css/style.css">
+
+    <!-- Leaflet (Maps) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </head>
 
 <body>
@@ -155,6 +161,12 @@
             </div>
 
             <div class="decor-line"></div>
+
+            <button class="btn-ghost" id="btn-view-recents">
+                <span class="material-icons-round">history</span> Recientes
+            </button>
+
+            <div class="decor-line"></div>
         </aside>
 
         <section class="stations-grid-container" id="stations-container">
@@ -190,6 +202,18 @@
                 </div>
             </div>
 
+            <!-- TABS CONTENT: RECENTS (Hidden) -->
+            <div id="view-history" class="hidden">
+                <div id="history-grid" class="stations-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- TABS CONTENT: MAP (Hidden) -->
+            <div id="view-map" class="hidden map-view-container">
+                <div id="geo-map"></div>
+            </div>
+
             <div id="loader" class="loader hidden">
                 <div class="spinner"></div>
             </div>
@@ -197,6 +221,7 @@
     </main>
 
     <footer class="player-bar glass-panel">
+        <canvas id="visualizer-canvas"></canvas>
         <div class="now-playing">
             <div class="station-logo-placeholder" id="player-logo">
                 <span class="material-icons-round">music_note</span>
@@ -211,6 +236,11 @@
             <!-- Sleep Timer Button -->
             <button class="btn-icon" id="btn-sleep">
                 <span class="material-icons-round">bedtime</span>
+            </button>
+
+            <!-- EQ Button -->
+            <button class="btn-icon" id="btn-eq">
+                <span class="material-icons-round">graphic_eq</span>
             </button>
 
             <!-- WhatsApp Button (Dynamic) -->
@@ -241,18 +271,30 @@
             <span class="material-icons-round">explore</span>
             <span>Explorar</span>
         </button>
+        <button class="nav-item" id="nav-map">
+            <span class="material-icons-round">public</span>
+            <span>Mapa</span>
+        </button>
         <button class="nav-item" id="nav-filter-toggle">
             <span class="material-icons-round">tune</span>
             <span>Filtros</span>
         </button>
+        <!-- Trends moved to desktop/extended or just fit 5 items -->
         <button class="nav-item" id="nav-trends">
             <span class="material-icons-round">local_fire_department</span>
-            <span>Top 50</span>
+            <span>Top</span>
         </button>
         <button class="nav-item" id="nav-favorites">
             <span class="material-icons-round">favorite</span>
-            <span>Favoritos</span>
+            <span>Favs</span>
         </button>
+        <!-- Recents could be accessed via Favorites view toggler in future, but let's stick to 5 items max for mobile dock. 
+             Maybe add Recents to "Filters" drawer or "Favorites" view. 
+             User asked for Recents feature. Let's put Recents access in Drawer or separate.
+             Let's keep 5 items. Filter toggle is essential.
+             I will add "Recents" to the Filters panel for simplicity or replace one item. 
+             Let's replace "Favorites" with "Library" that has tabs? 
+             No, keep it simple. I'll add Recents into the Filters Drawer as a link. -->
     </nav>
 
     <!-- Timer Modal -->
@@ -266,6 +308,63 @@
                 <button class="btn-timer" data-time="0">Cancelar</button>
             </div>
             <button class="btn-close-modal" id="btn-close-timer">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Equalizer Modal -->
+    <div id="eq-modal" class="modal-overlay hidden">
+        <div class="modal glass-panel eq-modal-content">
+            <h3>Ecualizador</h3>
+            <div class="eq-sliders">
+                <div class="eq-band">
+                    <input type="range" min="-12" max="12" value="0" data-freq="60" orient="vertical">
+                    <span>60Hz</span>
+                </div>
+                <div class="eq-band">
+                    <input type="range" min="-12" max="12" value="0" data-freq="170" orient="vertical">
+                    <span>170Hz</span>
+                </div>
+                <div class="eq-band">
+                    <input type="range" min="-12" max="12" value="0" data-freq="310" orient="vertical">
+                    <span>310Hz</span>
+                </div>
+                <div class="eq-band">
+                    <input type="range" min="-12" max="12" value="0" data-freq="600" orient="vertical">
+                    <span>600Hz</span>
+                </div>
+                <div class="eq-band">
+                    <input type="range" min="-12" max="12" value="0" data-freq="1000" orient="vertical">
+                    <span>1KHz</span>
+                </div>
+                <div class="eq-band">
+                    <input type="range" min="-12" max="12" value="0" data-freq="3000" orient="vertical">
+                    <span>3KHz</span>
+                </div>
+                <div class="eq-band">
+                    <input type="range" min="-12" max="12" value="0" data-freq="6000" orient="vertical">
+                    <span>6KHz</span>
+                </div>
+                <div class="eq-band">
+                    <input type="range" min="-12" max="12" value="0" data-freq="12000" orient="vertical">
+                    <span>12KHz</span>
+                </div>
+                <div class="eq-band">
+                    <input type="range" min="-12" max="12" value="0" data-freq="14000" orient="vertical">
+                    <span>14KHz</span>
+                </div>
+                <div class="eq-band">
+                    <input type="range" min="-12" max="12" value="0" data-freq="16000" orient="vertical">
+                    <span>16KHz</span>
+                </div>
+            </div>
+            <div class="eq-presets">
+                <button class="btn-preset" data-preset="flat">Flat</button>
+                <button class="btn-preset" data-preset="rock">Rock</button>
+                <button class="btn-preset" data-preset="pop">Pop</button>
+                <button class="btn-preset" data-preset="jazz">Jazz</button>
+                <button class="btn-preset" data-preset="classical">Clásica</button>
+            </div>
+            <button class="btn-close-modal" id="btn-close-eq">Cerrar</button>
         </div>
     </div>
 

@@ -67,6 +67,8 @@ const el = {
 
 // --- Player Instance ---
 const player = new RadioPlayer();
+let mapInstance = null;
+let parkingMarkers = [];
 
 // --- Initialization ---
 async function init() {
@@ -74,6 +76,9 @@ async function init() {
 
     setupEventListeners();
     setupPlayerCallbacks();
+
+    // Init Visualizer
+    player.startVisualizer(el.visualizerCanvas);
 
     // Load Countries
     showLoader(true);
@@ -165,7 +170,22 @@ function setupEventListeners() {
         el.navFavorites.addEventListener('click', () => switchView('favorites'));
         el.navTrends.addEventListener('click', () => switchView('trends'));
         el.navFilterToggle.addEventListener('click', () => toggleFilters());
+
+        // New Nav
+        if (el.navMap) el.navMap.addEventListener('click', () => switchView('map'));
     }
+
+    // New Sidebar Buttons
+    if (el.btnViewRecents) {
+        el.btnViewRecents.addEventListener('click', () => {
+            switchView('history');
+            toggleFilters(false); // Close mobile drawer if open
+        });
+    }
+
+    // EQ Logic
+    el.btnEq.addEventListener('click', () => el.eqModal.classList.remove('hidden'));
+    el.btnCloseEq.addEventListener('click', () => el.eqModal.classList.add('hidden'));
 
     // Timer Logic
     el.btnSleep.addEventListener('click', () => {
@@ -237,17 +257,20 @@ function switchView(viewName) {
     el.navExplore.classList.toggle('active', viewName === 'explore');
     el.navFavorites.classList.toggle('active', viewName === 'favorites');
     el.navTrends.classList.toggle('active', viewName === 'trends');
+    if (el.navMap) el.navMap.classList.toggle('active', viewName === 'map'); // Map Active State
 
     // Default hiding
     el.viewExplore.classList.add('hidden');
     el.viewFavorites.classList.add('hidden');
     el.viewTrends.classList.add('hidden');
+    el.viewMap.classList.add('hidden');     // Hide Map
+    el.viewRecents.classList.add('hidden'); // Hide Recents
 
     // Update Content UI & Logic
     if (viewName === 'explore') {
         el.viewExplore.classList.remove('hidden');
         el.gridTitle.textContent = state.selectedCity ? `${state.selectedCity}, ${state.selectedCountry}` : 'Explora el mundo';
-        renderStationsList(el.stationsGrid, state.stations); // Re-render to ensure state
+        renderStationsList(el.stationsGrid, state.stations);
     } else if (viewName === 'favorites') {
         el.viewFavorites.classList.remove('hidden');
         el.gridTitle.textContent = 'Mis Favoritos';
@@ -256,6 +279,14 @@ function switchView(viewName) {
         el.viewTrends.classList.remove('hidden');
         el.gridTitle.textContent = 'Top 50 Global';
         loadTrends();
+    } else if (viewName === 'history') { // Recents View
+        el.viewRecents.classList.remove('hidden');
+        el.gridTitle.textContent = 'Escuchado Recientemente';
+        loadRecents();
+    } else if (viewName === 'map') { // Map View
+        el.viewMap.classList.remove('hidden');
+        el.gridTitle.textContent = 'Mapa Global';
+        initMap();
     }
 
     toggleFilters(false);
@@ -264,6 +295,13 @@ function switchView(viewName) {
 function loadFavorites() {
     const favs = Storage.getFavoriteStations();
     renderStationsList(el.favoritesGrid, favs, true);
+    updateMapMarkers(favs); // Show favs on map if map active
+}
+
+function loadRecents() {
+    const recents = Storage.getRecents();
+    renderStationsList(el.recentsGrid, recents);
+    updateMapMarkers(recents);
 }
 
 function toggleFilters(forceState) {
@@ -385,6 +423,7 @@ function playStation(station) {
     el.btnPlay.disabled = false;
 
     // Play
+    Storage.addRecent(station); // Add to history
     player.play(station.url_resolved || station.url);
 }
 
@@ -460,6 +499,86 @@ function normalizeText(text) {
         .replace(/[\u0300-\u036f]/g, "")
         .toLowerCase()
         .trim();
+}
+
+// --- Map Logic ---
+function initMap() {
+    if (mapInstance) {
+        setTimeout(() => mapInstance.invalidateSize(), 100);
+        return;
+    }
+
+    if (typeof L === 'undefined') {
+        console.error("Leaflet not loaded");
+        return;
+    }
+
+    // Init Map
+    mapInstance = L.map('geo-map', {
+        zoomControl: false,
+        attributionControl: false
+    }).setView([20, 0], 2);
+
+    // Dark Matter Tiles (CartoDB) - Premium Look
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap &copy; CARTO',
+        subdomains: 'abcd',
+        maxZoom: 19
+    }).addTo(mapInstance);
+
+    // Add Zoom Control bottom right
+    L.control.zoom({
+        position: 'bottomright'
+    }).addTo(mapInstance);
+
+    // If we have stations loaded, show them
+    if (state.stations.length > 0) {
+        updateMapMarkers(state.stations);
+    } else {
+        updateMapMarkers(state.trends); // Default to trends on map
+    }
+}
+
+function updateMapMarkers(stations) {
+    if (!mapInstance) return;
+
+    // Clear existing
+    parkingMarkers.forEach(m => m.remove());
+    parkingMarkers = [];
+
+    if (!stations) return;
+
+    // Create bounds
+    const bounds = L.latLngBounds();
+    let hasPoints = false;
+
+    stations.forEach(station => {
+        if (station.geo_lat && station.geo_long) {
+            // Custom Icon
+            const icon = L.divIcon({
+                className: 'map-marker',
+                html: `<div style="width:10px; height:10px; background:var(--primary); border-radius:50%; box-shadow:0 0 10px var(--primary);"></div>`,
+                iconSize: [10, 10],
+                iconAnchor: [5, 5]
+            });
+
+            const marker = L.marker([station.geo_lat, station.geo_long], { icon: icon })
+                .addTo(mapInstance)
+                .bindPopup(`<b>${station.name}</b><br>${station.country}`);
+
+            marker.on('click', () => {
+                playStation(station);
+            });
+
+            parkingMarkers.push(marker);
+            bounds.extend([station.geo_lat, station.geo_long]);
+            hasPoints = true;
+        }
+    });
+
+    if (hasPoints) {
+        mapInstance.fitBounds(bounds, { padding: [50, 50], maxZoom: 8 });
+    }
 }
 
 // Start
