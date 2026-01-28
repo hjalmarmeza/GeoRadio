@@ -6,20 +6,30 @@ const SERVERS = [
     'https://api.radio-browser.info/json'
 ];
 
-let activeBaseUrl = SERVERS[0];
+let activeBaseUrl = 'https://de1.api.radio-browser.info/json';
+let serverReady = resolveBaseUrl();
 
 /**
- * Check which server is alive.
+ * Check which server is alive (Latency Check)
  */
 async function resolveBaseUrl() {
-    activeBaseUrl = 'https://de1.api.radio-browser.info/json';
-    // Potential robust check logic here
-}
+    const promises = SERVERS.map(server =>
+        fetch(`${server}/stats`)
+            .then(r => r.ok ? server : Promise.reject())
+            .catch(() => Promise.reject())
+    );
 
-resolveBaseUrl();
+    try {
+        activeBaseUrl = await Promise.any(promises);
+        console.log('Selected API Server:', activeBaseUrl);
+    } catch (err) {
+        console.warn('All API servers failed, fallback to default:', activeBaseUrl);
+    }
+}
 
 export async function getCountries() {
     try {
+        await serverReady;
         const response = await fetch(`${activeBaseUrl}/countries?order=stationcount&reverse=true`);
         if (!response.ok) throw new Error(response.statusText);
         return await response.json();
@@ -33,6 +43,7 @@ export async function getCities(countryName) {
     if (!countryName) return [];
 
     try {
+        await serverReady;
         const url = `${activeBaseUrl}/stations/search?country=${encodeURIComponent(countryName)}&hidebroken=true&order=clickcount&reverse=true&limit=500`;
         const response = await fetch(url);
         if (!response.ok) throw new Error('Stations fetch failed');
@@ -138,6 +149,7 @@ function enrichWithWhatsApp(stations) {
 
 export async function getTopStations(limit = 50) {
     try {
+        await serverReady;
         const url = `${activeBaseUrl}/stations/search?hidebroken=true&order=clickcount&reverse=true&limit=${limit}`;
         const response = await fetch(url);
         const data = await response.json();
@@ -154,6 +166,7 @@ export async function getStations(countryName, cityName, limit = 100) {
         if (cityName) {
             url += `&city=${encodeURIComponent(cityName)}`;
         }
+        await serverReady;
         const response = await fetch(url);
         const data = await response.json();
         return enrichWithWhatsApp(data);
