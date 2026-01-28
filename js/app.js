@@ -274,7 +274,6 @@ if (btnLogout) {
         toggleFilters(false); // Close drawer
     });
 }
-}
 
 // --- Logic ---
 async function loadStations(country, city) {
@@ -567,7 +566,7 @@ function normalizeText(text) {
         .trim();
 }
 
-// --- Map Logic ---
+
 function updateFavCountryButton(countryName) {
     if (!el.btnFavCountry) return;
 
