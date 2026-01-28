@@ -319,6 +319,11 @@ body {
     padding-left: 40px;
 }
 
+.search-wrap.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
 .stations-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -726,6 +731,33 @@ body {
 }
 
 .btn-fav .material-icons-round {
+    font-size: 1.1rem;
+}
+
+.btn-whatsapp {
+    background: rgba(37, 211, 102, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #25D366;
+    /* WhatsApp Green */
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 5px;
+    /* Stack vertical if multiple actions */
+}
+
+.btn-whatsapp:hover {
+    background: rgba(37, 211, 102, 0.4);
+    box-shadow: 0 0 10px rgba(37, 211, 102, 0.4);
+    color: #fff;
+}
+
+.btn-whatsapp .material-icons-round {
     font-size: 1.1rem;
 }
 

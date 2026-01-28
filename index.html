@@ -160,9 +160,9 @@
         <section class="stations-grid-container" id="stations-container">
             <div class="grid-header">
                 <h2 id="grid-title">Explora el mundo</h2>
-                <div class="search-wrap">
+                <div class="search-wrap disabled">
                     <span class="material-icons-round">search</span>
-                    <input type="text" id="station-search" placeholder="Buscar emisora..." class="glass-input">
+                    <input type="text" id="station-search" placeholder="Buscar emisora..." class="glass-input" disabled>
                 </div>
             </div>
 
@@ -211,6 +211,11 @@
             <!-- Sleep Timer Button -->
             <button class="btn-icon" id="btn-sleep">
                 <span class="material-icons-round">bedtime</span>
+            </button>
+
+            <!-- WhatsApp Button (Dynamic) -->
+            <button class="btn-icon hidden" id="btn-player-whatsapp" style="color: #25D366;">
+                <span class="material-icons-round">chat</span>
             </button>
 
             <button class="btn-icon" id="btn-prev" disabled>

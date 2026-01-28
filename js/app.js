@@ -35,6 +35,7 @@ const el = {
     searchInput: document.getElementById('station-search'),
     totalStations: document.getElementById('total-stations'),
     gridTitle: document.getElementById('grid-title'),
+    searchWrap: document.querySelector('.search-wrap'),
 
     // Views
     viewExplore: document.getElementById('view-explore'),
@@ -48,6 +49,7 @@ const el = {
     playerLogo: document.getElementById('player-logo'),
     btnPlay: document.getElementById('btn-play-toggle'),
     btnSleep: document.getElementById('btn-sleep'), // New Btn
+    btnPlayerWhatsapp: document.getElementById('btn-player-whatsapp'), // New Btn
     playIcon: document.getElementById('play-icon'),
     volumeSlider: document.getElementById('volume-slider'),
 
@@ -110,7 +112,12 @@ function setupEventListeners() {
         populateSelect(el.citySelect, cities.map(c => c.name), "Selecciona ciudad...");
 
         el.citySelect.disabled = false;
+        el.citySelect.disabled = false;
         el.cityGroup.classList.remove('disabled');
+
+        // Reset and disable search until city is picked
+        toggleSearch(false);
+        el.searchInput.value = '';
         // showLoader(false);
     });
 
@@ -204,6 +211,10 @@ async function loadStations(country, city) {
     el.totalStations.textContent = stations.length;
     renderCurrentView();
     showLoader(false);
+
+    // Enable search if we have stations, or at least enable the input to allow zero-result awareness if desired.
+    // User asked to activate it "after selected country and city".
+    toggleSearch(true);
 }
 
 async function loadTrends() {
@@ -306,6 +317,10 @@ function renderStationsList(container, stations, isFavView = false) {
 
         card.innerHTML = `
             <div class="card-actions">
+                ${station.whatsapp ? `
+                <button class="btn-whatsapp" onclick="event.stopPropagation(); window.open('https://wa.me/${station.whatsapp}', '_blank')">
+                    <span class="material-icons-round">chat</span>
+                </button>` : ''}
                 <button class="btn-fav ${isFav ? 'active' : ''}" data-id="${station.stationuuid}">
                     <span class="material-icons-round">${isFav ? 'favorite' : 'favorite_border'}</span>
                 </button>
@@ -356,6 +371,15 @@ function playStation(station) {
         el.playerLogo.innerHTML = `<img src="${station.favicon}" style="width:100%; height:100%; border-radius:12px; object-fit:cover;">`;
     } else {
         el.playerLogo.innerHTML = `<span class="material-icons-round">radio</span>`;
+    }
+
+    // Update WhatsApp Button in Player
+    if (station.whatsapp) {
+        el.btnPlayerWhatsapp.classList.remove('hidden');
+        el.btnPlayerWhatsapp.onclick = () => window.open(`https://wa.me/${station.whatsapp}`, '_blank');
+    } else {
+        el.btnPlayerWhatsapp.classList.add('hidden');
+        el.btnPlayerWhatsapp.onclick = null;
     }
 
     el.btnPlay.disabled = false;
@@ -416,6 +440,16 @@ function showLoader(show) {
         } else {
             el.loader.classList.add('hidden');
         }
+    }
+}
+
+function toggleSearch(enable) {
+    if (enable) {
+        el.searchWrap.classList.remove('disabled');
+        el.searchInput.disabled = false;
+    } else {
+        el.searchWrap.classList.add('disabled');
+        el.searchInput.disabled = true;
     }
 }
 
