@@ -323,15 +323,24 @@ async function loadTrends() {
     // If country selected, show top for country
     showLoader(true);
     let trends = [];
+    let title = 'Top Global';
 
     if (state.selectedCountry) {
-        el.gridTitle.textContent = `Top 10 en ${state.selectedCountry}`;
+        title = `Top 10 en ${state.selectedCountry}`;
         trends = await API.getTopCountryStations(state.selectedCountry, 10);
+
+        // Fallback if no country stations found (some countries might return 0)
+        if (!trends || trends.length === 0) {
+            console.log("No top stations for country, falling back to global");
+            title = `Top Global (No se encontraron datos para ${state.selectedCountry})`;
+            trends = await API.getTopStations(50);
+        }
     } else {
-        el.gridTitle.textContent = 'Top Global (Selecciona un país para ver el suyo)';
+        title = 'Top Global (Selecciona un país para ver el suyo)';
         trends = await API.getTopStations(50);
     }
 
+    el.gridTitle.textContent = title;
     state.trends = trends;
     renderStationsList(el.trendsGrid, trends);
     showLoader(false);
@@ -344,15 +353,12 @@ function switchView(viewName) {
     el.navExplore.classList.toggle('active', viewName === 'explore');
     el.navFavorites.classList.toggle('active', viewName === 'favorites');
     el.navTrends.classList.toggle('active', viewName === 'trends');
-    el.navExplore.classList.toggle('active', viewName === 'explore');
-    el.navFavorites.classList.toggle('active', viewName === 'favorites');
-    el.navTrends.classList.toggle('active', viewName === 'trends');
 
     // Default hiding
     el.viewExplore.classList.add('hidden');
     el.viewFavorites.classList.add('hidden');
     el.viewTrends.classList.add('hidden');
-    el.viewRecents.classList.add('hidden'); // Hide Recents
+    if (el.viewRecents) el.viewRecents.classList.add('hidden');
 
     // Update Content UI & Logic
     if (viewName === 'explore') {
@@ -366,9 +372,9 @@ function switchView(viewName) {
         }
 
         // Restore list if we have data
-        if (state.stations.length > 0) {
+        if (state.stations && state.stations.length > 0) {
             // Check if there was a filter applied
-            const term = el.searchInput.value;
+            const term = el.searchInput ? el.searchInput.value : '';
             if (term) {
                 const filtered = state.stations.filter(s => normalizeText(s.name).includes(normalizeText(term)));
                 renderStationsList(el.stationsGrid, filtered);
