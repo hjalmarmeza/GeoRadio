@@ -102,7 +102,7 @@ export class RadioPlayer {
             ctx.clearRect(0, 0, w, h);
 
             if (!this.isPlaying) {
-                // Flat line when paused
+                // Flat quiet line
                 ctx.beginPath();
                 ctx.moveTo(0, h / 2);
                 ctx.lineTo(w, h / 2);
@@ -112,41 +112,52 @@ export class RadioPlayer {
                 return;
             }
 
-            // --- Futuristic Matrix Waveform ---
-            ctx.beginPath();
-            ctx.lineWidth = 2;
-            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#00f3ff';
-            ctx.strokeStyle = primaryColor;
-
-            // Glow Effect
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = primaryColor;
-
-            const time = Date.now() / 150; // Speed factor
+            // --- Premium Sound Mesh / Ribbon Visualizer ---
+            const time = Date.now() / 1000;
             const centerY = h / 2;
+            const lines = 12; // Number of lines in the ribbon
 
-            ctx.moveTo(0, centerY);
+            ctx.globalCompositeOperation = 'screen'; // Additive blending for glow look
 
-            for (let x = 0; x < w; x += 3) { // Step 3px for performance
-                // Simulate waveform: Sum of Sine waves + Noise
-                // Frequencies based on X, modulated by Time
-                const freq1 = Math.sin(x * 0.02 + time);
-                const freq2 = Math.sin(x * 0.05 - time * 1.5);
-                const noise = (Math.random() - 0.5) * 0.1; // Jitter
+            // Use App Theme Colors
+            const baseColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#00f3ff';
+            const secondaryColor = getComputedStyle(document.documentElement).getPropertyValue('--secondary').trim() || '#bc13fe';
 
-                // Amplitude modulation (higher in center)
-                const centerDist = Math.abs(x - w / 2) / (w / 2); // 0 at center, 1 at edges
-                const envelope = 1 - Math.pow(centerDist, 2); // Parabolic envelope
+            for (let j = 0; j < lines; j++) {
+                ctx.beginPath();
 
-                const yOffset = (freq1 * 10 + freq2 * 5 + noise * 10) * envelope;
+                // Interleaved colors
+                ctx.strokeStyle = j % 2 === 0 ? baseColor : secondaryColor;
 
-                ctx.lineTo(x, centerY + yOffset * 2); // Scale amplitude
+                // Fade out edges of the ribbon
+                const alpha = 0.1 + (Math.sin((j / lines) * Math.PI) * 0.4);
+                ctx.globalAlpha = alpha;
+                ctx.lineWidth = 1.5;
+
+                for (let x = 0; x < w; x += 5) {
+                    // Normalized X (0 to 1)
+                    const nx = x / w;
+
+                    // Wave calculation
+                    // Combine low frequency (shape) and high frequency (detail)
+                    const wave1 = Math.sin(nx * 10 + time * 2 + j * 0.2);
+                    const wave2 = Math.cos(nx * 20 - time * 3 + j * 0.3);
+                    const wave3 = Math.sin(nx * 5 + time + j * 0.1); // Slow carrier
+
+                    // Amplitude peaks in middle, tapers at ends
+                    const envelope = Math.pow(Math.sin(nx * Math.PI), 2);
+
+                    const yOffset = (wave1 * 15 + wave2 * 10 + wave3 * 20) * envelope;
+
+                    if (x === 0) ctx.moveTo(x, centerY + yOffset);
+                    else ctx.lineTo(x, centerY + yOffset);
+                }
+                ctx.stroke();
             }
 
-            ctx.stroke();
-
-            // Reset Shadow
-            ctx.shadowBlur = 0;
+            // Reset context
+            ctx.globalAlpha = 1.0;
+            ctx.globalCompositeOperation = 'source-over';
         };
         draw();
     }
