@@ -1,4 +1,4 @@
-const CACHE_NAME = 'georadio-v1';
+const CACHE_NAME = 'georadio-v2-neon';
 const ASSETS = [
     './',
     './index.html',
@@ -10,9 +10,23 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (e) => {
+    self.skipWaiting();
     e.waitUntil(
         caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
     );
+});
+
+self.addEventListener('activate', (e) => {
+    e.waitUntil(
+        caches.keys().then((keyList) => {
+            return Promise.all(keyList.map((key) => {
+                if (key !== CACHE_NAME) {
+                    return caches.delete(key);
+                }
+            }));
+        })
+    );
+    return self.clients.claim();
 });
 
 self.addEventListener('fetch', (e) => {
@@ -21,7 +35,8 @@ self.addEventListener('fetch', (e) => {
         return;
     }
 
-    // For App Shell, go Cache First
+    // For App Shell, go Cache First, but fall back to network if not found or try network for updates?
+    // Stale-while-revalidate strategy is safer for dev, but let's stick to Cache First with Versioning for now.
     e.respondWith(
         caches.match(e.request).then((response) => response || fetch(e.request))
     );
