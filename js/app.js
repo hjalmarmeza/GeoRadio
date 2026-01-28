@@ -135,17 +135,17 @@ function setupEventListeners() {
 
     // Search Filter
     el.searchInput.addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase();
+        const term = normalizeText(e.target.value);
 
         if (state.currentView === 'explore') {
-            const filtered = state.stations.filter(s => s.name.toLowerCase().includes(term));
+            const filtered = state.stations.filter(s => normalizeText(s.name).includes(term));
             renderStationsList(el.stationsGrid, filtered);
         } else if (state.currentView === 'favorites') {
             const favs = Storage.getFavoriteStations();
-            const filtered = favs.filter(s => s.name.toLowerCase().includes(term));
+            const filtered = favs.filter(s => normalizeText(s.name).includes(term));
             renderStationsList(el.favoritesGrid, filtered);
         } else if (state.currentView === 'trends') {
-            const filtered = state.trends.filter(s => s.name.toLowerCase().includes(term));
+            const filtered = state.trends.filter(s => normalizeText(s.name).includes(term));
             renderStationsList(el.trendsGrid, filtered);
         }
     });
@@ -451,6 +451,15 @@ function toggleSearch(enable) {
         el.searchWrap.classList.add('disabled');
         el.searchInput.disabled = true;
     }
+}
+
+function normalizeText(text) {
+    if (!text) return '';
+    return text.toString()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
 }
 
 // Start
