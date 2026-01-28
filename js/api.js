@@ -140,6 +140,11 @@ export async function getTopStations(limit = 50) {
     return enrichWithWhatsApp(data || []);
 }
 
+export async function getTopCountryStations(countryName, limit = 10) {
+    const data = await fetchWithFallback(`/stations/search?country=${encodeURIComponent(countryName)}&hidebroken=true&order=clickcount&reverse=true&limit=${limit}`);
+    return enrichWithWhatsApp(data || []);
+}
+
 export async function getStations(countryName, cityName, limit = 100) {
     let endpoint = `/stations/search?country=${encodeURIComponent(countryName)}&hidebroken=true&order=clickcount&reverse=true&limit=${limit}`;
     if (cityName) {

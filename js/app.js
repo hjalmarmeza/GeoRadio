@@ -316,13 +316,18 @@ async function loadStations(country, city) {
 }
 
 async function loadTrends() {
-    if (state.trends.length > 0) {
-        renderStationsList(el.trendsGrid, state.trends);
-        return;
+    // If country selected, show top for country
+    showLoader(true);
+    let trends = [];
+
+    if (state.selectedCountry) {
+        el.gridTitle.textContent = `Top 10 en ${state.selectedCountry}`;
+        trends = await API.getTopCountryStations(state.selectedCountry, 10);
+    } else {
+        el.gridTitle.textContent = 'Top Global (Selecciona un país para ver el suyo)';
+        trends = await API.getTopStations(50);
     }
 
-    showLoader(true);
-    const trends = await API.getTopStations(50);
     state.trends = trends;
     renderStationsList(el.trendsGrid, trends);
     showLoader(false);
@@ -358,9 +363,18 @@ function switchView(viewName) {
 
         // Restore list if we have data
         if (state.stations.length > 0) {
-            renderStationsList(el.stationsGrid, state.stations);
+            // Check if there was a filter applied
+            const term = el.searchInput.value;
+            if (term) {
+                const filtered = state.stations.filter(s => normalizeText(s.name).includes(normalizeText(term)));
+                renderStationsList(el.stationsGrid, filtered);
+            } else {
+                renderStationsList(el.stationsGrid, state.stations);
+            }
+            toggleSearch(true); // Re-enable search input
         } else {
             renderStationsList(el.stationsGrid, []); // Show empty state
+            toggleSearch(false);
         }
     } else if (viewName === 'favorites') {
         el.viewFavorites.classList.remove('hidden');
