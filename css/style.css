@@ -1257,3 +1257,31 @@ body.immersive-mode #btn-zen-mode {
     background: rgba(255,255,255,0.1);
     border-radius: 50%;
 }
+
+/* Improve Zen Mode Amplitude */
+body.immersive-mode #visualizer-canvas {
+    opacity: 0.8; /* Brighter */
+}
+
+/* Zen Mode Exit Button - ensure visibility */
+body.immersive-mode #btn-zen-mode {
+    display: flex !important;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    width: 50px;
+    height: 50px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50%;
+    color: #fff;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+}
+body.immersive-mode #btn-zen-mode:hover {
+    background: var(--primary);
+    color: #000;
+}

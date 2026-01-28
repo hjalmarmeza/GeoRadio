@@ -102,7 +102,7 @@ async function init() {
     // Load Countries
     showLoader(true);
     const countries = await API.getCountries();
-    populateSelect(el.countrySelect, countries.map(c => c.name), "Selecciona...", true);
+    populateSelect(el.countrySelect, countries.map(c => c.name), "Selecciona...", 'country');
     showLoader(false);
 }
 
@@ -136,7 +136,7 @@ function setupEventListeners() {
         // showLoader(true); 
 
         const cities = await API.getCities(country);
-        populateSelect(el.citySelect, cities.map(c => c.name), "Selecciona ciudad...");
+        populateSelect(el.citySelect, cities.map(c => c.name), "Selecciona ciudad...", 'city', country);
 
         el.citySelect.disabled = false;
         el.cityGroup.classList.remove('disabled');
@@ -594,16 +594,28 @@ function setupPlayerCallbacks() {
 }
 
 // --- Helpers ---
-function populateSelect(selectElement, items, defaultText = "Selecciona...", isCountry = false) {
+function populateSelect(selectElement, items, defaultText = "Selecciona...", mode = null, context = null) {
     selectElement.innerHTML = `<option value="" disabled selected>${defaultText}</option>`;
     let unique = [...new Set(items)];
 
-    if (isCountry) {
-        // Sort favorites to top
-        const favs = Storage.getFavoriteCountries(); // ['Spain', 'Japan']
+    if (mode === 'country') {
+        const favs = Storage.getFavoriteCountries();
         unique.sort((a, b) => {
             const isFavA = favs.includes(a);
             const isFavB = favs.includes(b);
+            if (isFavA && !isFavB) return -1;
+            if (!isFavA && isFavB) return 1;
+            return a.localeCompare(b);
+        });
+    } else if (mode === 'city' && context) {
+        // Sort favorite cities to top
+        const allFavs = Storage.getFavoriteCities(); // [{name, country}, ...]
+        // Filter favs for this country
+        const countryFavs = allFavs.filter(f => f.country === context).map(f => f.name);
+
+        unique.sort((a, b) => {
+            const isFavA = countryFavs.includes(a);
+            const isFavB = countryFavs.includes(b);
             if (isFavA && !isFavB) return -1;
             if (!isFavA && isFavB) return 1;
             return a.localeCompare(b);
@@ -615,7 +627,12 @@ function populateSelect(selectElement, items, defaultText = "Selecciona...", isC
     unique.forEach(item => {
         const option = document.createElement('option');
         option.value = item;
-        option.textContent = (isCountry && Storage.isFavoriteCountry(item) ? '⭐ ' : '') + item;
+
+        let label = item;
+        if (mode === 'country' && Storage.isFavoriteCountry(item)) label = '⭐ ' + item;
+        if (mode === 'city' && context && Storage.isFavoriteCity(item, context)) label = '⭐ ' + item;
+
+        option.textContent = label;
         selectElement.appendChild(option);
     });
 }
