@@ -117,7 +117,6 @@ function setupEventListeners() {
         populateSelect(el.citySelect, cities.map(c => c.name), "Selecciona ciudad...");
 
         el.citySelect.disabled = false;
-        el.citySelect.disabled = false;
         el.cityGroup.classList.remove('disabled');
 
         // Reset and disable search until city is picked
@@ -184,8 +183,10 @@ function setupEventListeners() {
     }
 
     // EQ Logic
-    el.btnEq.addEventListener('click', () => el.eqModal.classList.remove('hidden'));
-    el.btnCloseEq.addEventListener('click', () => el.eqModal.classList.add('hidden'));
+    if (el.btnEq && el.btnCloseEq && el.eqModal) {
+        el.btnEq.addEventListener('click', () => el.eqModal.classList.remove('hidden'));
+        el.btnCloseEq.addEventListener('click', () => el.eqModal.classList.add('hidden'));
+    }
 
     // Timer Logic
     el.btnSleep.addEventListener('click', () => {
