@@ -43,7 +43,11 @@ const el = {
     viewExplore: document.getElementById('view-explore'),
     viewFavorites: document.getElementById('view-favorites'),
     viewTrends: document.getElementById('view-trends'), // New View
+    viewRecents: document.getElementById('view-history'), // New Recents View
     filtersPanel: document.getElementById('filters-panel'),
+
+    // Grids (Moved up for clarity or added here if missed)
+    recentsGrid: document.getElementById('history-grid'),
 
     // Player
     playerStationName: document.getElementById('player-station-name'),
