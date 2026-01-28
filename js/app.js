@@ -59,6 +59,10 @@ const el = {
     navTrends: document.getElementById('nav-trends'), // New Nav
     navFilterToggle: document.getElementById('nav-filter-toggle'),
 
+    // Sidebar
+    btnViewRecents: document.getElementById('btn-view-recents'),
+    btnViewMapSidebar: document.getElementById('btn-view-map-sidebar'), // New Desktop Map Btn
+
     // Modals
     timerModal: document.getElementById('timer-modal'),
     btnCloseTimer: document.getElementById('btn-close-timer'),
@@ -180,7 +184,14 @@ function setupEventListeners() {
     if (el.btnViewRecents) {
         el.btnViewRecents.addEventListener('click', () => {
             switchView('history');
-            toggleFilters(false); // Close mobile drawer if open
+            toggleFilters(false);
+        });
+    }
+
+    if (el.btnViewMapSidebar) {
+        el.btnViewMapSidebar.addEventListener('click', () => {
+            switchView('map');
+            // Do not close filters on desktop map view necessarily, but we can
         });
     }
 
@@ -506,39 +517,45 @@ function normalizeText(text) {
 
 // --- Map Logic ---
 function initMap() {
-    if (mapInstance) {
-        setTimeout(() => mapInstance.invalidateSize(), 100);
-        return;
-    }
+    try {
+        if (mapInstance) {
+            setTimeout(() => {
+                try { mapInstance.invalidateSize(); } catch (e) { console.error(e); }
+            }, 100);
+            return;
+        }
 
-    if (typeof L === 'undefined') {
-        console.error("Leaflet not loaded");
-        return;
-    }
+        if (typeof L === 'undefined') {
+            console.error("Leaflet not loaded");
+            return;
+        }
 
-    // Init Map
-    mapInstance = L.map('geo-map', {
-        zoomControl: false,
-        attributionControl: false
-    }).setView([20, 0], 2);
+        // Check if element exists/visible
+        if (!document.getElementById('geo-map')) return;
 
-    // Dark Matter Tiles (CartoDB) - Premium Look
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap &copy; CARTO',
-        subdomains: 'abcd',
-        maxZoom: 19
-    }).addTo(mapInstance);
+        // Init Map
+        mapInstance = L.map('geo-map', {
+            zoomControl: false,
+            attributionControl: false
+        }).setView([20, 0], 2);
 
-    // Add Zoom Control bottom right
-    L.control.zoom({
-        position: 'bottomright'
-    }).addTo(mapInstance);
+        // Dark Matter Tiles
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap &copy; CARTO',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(mapInstance);
 
-    // If we have stations loaded, show them
-    if (state.stations.length > 0) {
-        updateMapMarkers(state.stations);
-    } else {
-        updateMapMarkers(state.trends); // Default to trends on map
+        L.control.zoom({ position: 'bottomright' }).addTo(mapInstance);
+
+        // Show contents
+        if (state.stations.length > 0) {
+            updateMapMarkers(state.stations);
+        } else {
+            updateMapMarkers(state.trends);
+        }
+    } catch (err) {
+        console.error("Map Init Failed:", err);
     }
 }
 
