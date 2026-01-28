@@ -149,9 +149,12 @@ export class RadioPlayer {
 
                     // Check for Immersive Mode
                     const isImmersive = document.body.classList.contains('immersive-mode');
-                    const ampMultiplier = isImmersive ? 4.0 : 1.0; // 4x amplitude in Zen Mode!
+                    const ampMultiplier = isImmersive ? 2.5 : 1.0; // Balanced amplitude
 
                     const yOffset = (wave1 * 15 + wave2 * 10 + wave3 * 20) * envelope * ampMultiplier;
+
+                    // If Immersive, center might need offset if logo pushes distinct
+                    // But standard centerY is fine since logo is centered.
 
                     if (x === 0) ctx.moveTo(x, centerY + yOffset);
                     else ctx.lineTo(x, centerY + yOffset);

@@ -1390,3 +1390,50 @@ body.immersive-mode #player-status {
     font-size: 1.2rem !important;
     margin-top: 0.5rem;
 }
+
+/* --- FINAL ZEN MODE ADJUSTMENTS --- */
+
+/* 1. Resize Logo to be moderate (not huge) */
+body.immersive-mode .now-playing img {
+    width: 140px !important;  /* Reduced from 280px */
+    height: 140px !important;
+    margin-bottom: 2rem !important;
+    transform: scale(1.1) !important;
+    box-shadow: 0 0 40px rgba(0, 243, 255, 0.3) !important;
+}
+
+/* 2. Make Visualizer FULLSCREEN and visible behind everything */
+body.immersive-mode #visualizer-canvas {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 1 !important; /* Behind text (z-index 2) but clearly visible */
+    opacity: 1 !important;
+    transform: none !important; /* Reset scale, let logic handle logic */
+    pointer-events: none;
+}
+
+body.immersive-mode .player-bar {
+    background: rgba(5, 5, 10, 0.85) !important; /* Slightly transparent to see waves if they go behind */
+    z-index: 100 !important;
+}
+
+/* Reset scale of text to be elegant */
+body.immersive-mode #player-station-name {
+    font-size: 1.8rem !important;
+    text-shadow: 0 0 10px rgba(0,0,0,0.8);
+    position: relative;
+    z-index: 5;
+}
+
+body.immersive-mode #player-status {
+    position: relative;
+    z-index: 5;
+}
+
+body.immersive-mode .now-playing {
+    z-index: 5;
+    position: relative;
+}
