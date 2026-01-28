@@ -350,14 +350,17 @@ function switchView(viewName) {
         el.viewExplore.classList.remove('hidden');
 
         // Restore title or default
-        if (state.stations.length > 0 && state.selectedCity) {
+        if (state.selectedCity) {
             el.gridTitle.textContent = `${state.selectedCity}, ${state.selectedCountry}`;
-            renderStationsList(el.stationsGrid, state.stations);
         } else {
             el.gridTitle.textContent = 'Explora el mundo';
-            // If state has stations but no city selected (rare), just show them
-            if (state.stations.length > 0) renderStationsList(el.stationsGrid, state.stations);
-            else renderStationsList(el.stationsGrid, []); // Show empty state
+        }
+
+        // Restore list if we have data
+        if (state.stations.length > 0) {
+            renderStationsList(el.stationsGrid, state.stations);
+        } else {
+            renderStationsList(el.stationsGrid, []); // Show empty state
         }
     } else if (viewName === 'favorites') {
         el.viewFavorites.classList.remove('hidden');
