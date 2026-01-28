@@ -101,27 +101,52 @@ export class RadioPlayer {
 
             ctx.clearRect(0, 0, w, h);
 
-            if (!this.isPlaying) return;
-
-            // Draw Bars
-            const barW = w / this.bars;
-            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#00f3ff';
-
-            for (let i = 0; i < this.bars; i++) {
-                // Simulated frequency data
-                // Combine sine waves and random noise for "organic" look
-                const time = Date.now() / 200;
-                const hScale = Math.sin(i * 0.2 + time) * 0.5 + 0.5; // 0 to 1
-                const noise = Math.random() * 0.5;
-                const magnitude = (hScale * 0.7 + noise * 0.3) * h * 0.8; // Peak at 80% height
-
-                const x = i * barW;
-                const y = h - magnitude;
-
-                // Gradient opacity
-                ctx.globalAlpha = 0.3 + (magnitude / h) * 0.7;
-                ctx.fillRect(x, y, barW - 2, magnitude);
+            if (!this.isPlaying) {
+                // Flat line when paused
+                ctx.beginPath();
+                ctx.moveTo(0, h / 2);
+                ctx.lineTo(w, h / 2);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                return;
             }
+
+            // --- Futuristic Matrix Waveform ---
+            ctx.beginPath();
+            ctx.lineWidth = 2;
+            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#00f3ff';
+            ctx.strokeStyle = primaryColor;
+
+            // Glow Effect
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = primaryColor;
+
+            const time = Date.now() / 150; // Speed factor
+            const centerY = h / 2;
+
+            ctx.moveTo(0, centerY);
+
+            for (let x = 0; x < w; x += 3) { // Step 3px for performance
+                // Simulate waveform: Sum of Sine waves + Noise
+                // Frequencies based on X, modulated by Time
+                const freq1 = Math.sin(x * 0.02 + time);
+                const freq2 = Math.sin(x * 0.05 - time * 1.5);
+                const noise = (Math.random() - 0.5) * 0.1; // Jitter
+
+                // Amplitude modulation (higher in center)
+                const centerDist = Math.abs(x - w / 2) / (w / 2); // 0 at center, 1 at edges
+                const envelope = 1 - Math.pow(centerDist, 2); // Parabolic envelope
+
+                const yOffset = (freq1 * 10 + freq2 * 5 + noise * 10) * envelope;
+
+                ctx.lineTo(x, centerY + yOffset * 2); // Scale amplitude
+            }
+
+            ctx.stroke();
+
+            // Reset Shadow
+            ctx.shadowBlur = 0;
         };
         draw();
     }
