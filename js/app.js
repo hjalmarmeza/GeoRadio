@@ -26,6 +26,7 @@ const state = {
 // --- DOM Elements ---
 const el = {
     countrySelect: document.getElementById('country-select'),
+    btnFavCountry: document.getElementById('btn-fav-country'), // New Fav Btn
     citySelect: document.getElementById('city-select'),
     cityGroup: document.getElementById('city-group'),
     stationsGrid: document.getElementById('stations-grid'),
@@ -86,8 +87,10 @@ async function init() {
 
     // Load Countries
     showLoader(true);
+    // Load Countries
+    showLoader(true);
     const countries = await API.getCountries();
-    populateSelect(el.countrySelect, countries.map(c => c.name));
+    populateSelect(el.countrySelect, countries.map(c => c.name), "Selecciona...", true);
     showLoader(false);
 }
 
@@ -105,6 +108,9 @@ function setupEventListeners() {
         }
 
         // Reset City (but keep Country selected)
+        // Update Fav Button
+        updateFavCountryButton(country);
+
         el.citySelect.innerHTML = '<option value="" disabled selected>Cargando ciudades...</option>';
         el.citySelect.disabled = true;
         el.cityGroup.classList.add('disabled');
@@ -171,7 +177,19 @@ function setupEventListeners() {
     el.navExplore.addEventListener('click', () => switchView('explore'));
     el.navFavorites.addEventListener('click', () => switchView('favorites'));
     el.navTrends.addEventListener('click', () => switchView('trends'));
+    el.navTrends.addEventListener('click', () => switchView('trends'));
     el.navFilterToggle.addEventListener('click', () => toggleFilters());
+
+    // Fav Country Click
+    if (el.btnFavCountry) {
+        el.btnFavCountry.addEventListener('click', () => {
+            const country = el.countrySelect.value;
+            if (!country) return;
+
+            const added = Storage.toggleFavoriteCountry(country);
+            updateFavCountryButton(country);
+        });
+    }
 }
 
 // New Sidebar Buttons
@@ -186,6 +204,45 @@ if (el.btnViewRecents) {
 if (el.btnEq && el.btnCloseEq && el.eqModal) {
     el.btnEq.addEventListener('click', () => el.eqModal.classList.remove('hidden'));
     el.btnCloseEq.addEventListener('click', () => el.eqModal.classList.add('hidden'));
+
+    // Presets Interaction
+    const presets = {
+        flat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        rock: [5, 4, 3, 1, -1, -1, 0, 2, 4, 5],
+        pop: [2, 1, 2, 4, 4, 2, 0, -1, -2, -1],
+        jazz: [3, 2, 1, 2, -2, -2, 0, 1, 3, 4],
+        classical: [4, 3, 2, 1, -1, -1, 0, 1, 3, 4]
+    };
+
+    const sliders = document.querySelectorAll('.eq-band input');
+    const btnPresets = document.querySelectorAll('.btn-preset');
+
+    btnPresets.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            // Remove active from others
+            btnPresets.forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+
+            const presetName = e.target.dataset.preset;
+            const values = presets[presetName];
+
+            if (values) {
+                sliders.forEach((slider, i) => {
+                    if (values[i] !== undefined) {
+                        slider.value = values[i];
+                        // Trigger change for any listener
+                    }
+                });
+            }
+        });
+    });
+
+    // Reset preset active if slider moved manually
+    sliders.forEach(s => {
+        s.addEventListener('input', () => {
+            btnPresets.forEach(b => b.classList.remove('active'));
+        });
+    });
 }
 
 // Timer Logic
@@ -457,13 +514,28 @@ function setupPlayerCallbacks() {
 }
 
 // --- Helpers ---
-function populateSelect(selectElement, items, defaultText = "Selecciona...") {
+function populateSelect(selectElement, items, defaultText = "Selecciona...", isCountry = false) {
     selectElement.innerHTML = `<option value="" disabled selected>${defaultText}</option>`;
-    const unique = [...new Set(items)].sort();
+    let unique = [...new Set(items)];
+
+    if (isCountry) {
+        // Sort favorites to top
+        const favs = Storage.getFavoriteCountries(); // ['Spain', 'Japan']
+        unique.sort((a, b) => {
+            const isFavA = favs.includes(a);
+            const isFavB = favs.includes(b);
+            if (isFavA && !isFavB) return -1;
+            if (!isFavA && isFavB) return 1;
+            return a.localeCompare(b);
+        });
+    } else {
+        unique.sort();
+    }
+
     unique.forEach(item => {
         const option = document.createElement('option');
         option.value = item;
-        option.textContent = item;
+        option.textContent = (isCountry && Storage.isFavoriteCountry(item) ? '⭐ ' : '') + item;
         selectElement.appendChild(option);
     });
 }
@@ -580,6 +652,28 @@ function updateMapMarkers(stations) {
 
     if (hasPoints) {
         mapInstance.fitBounds(bounds, { padding: [50, 50], maxZoom: 8 });
+    }
+}
+
+function updateFavCountryButton(countryName) {
+    if (!el.btnFavCountry) return;
+
+    // Show button only if country selected
+    if (!countryName) {
+        el.btnFavCountry.classList.add('hidden');
+        return;
+    }
+    el.btnFavCountry.classList.remove('hidden');
+
+    const isFav = Storage.isFavoriteCountry(countryName);
+    const icon = el.btnFavCountry.querySelector('span');
+
+    if (isFav) {
+        el.btnFavCountry.classList.add('active');
+        icon.textContent = 'star';
+    } else {
+        el.btnFavCountry.classList.remove('active');
+        icon.textContent = 'star_border';
     }
 }
 

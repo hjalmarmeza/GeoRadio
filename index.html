@@ -130,7 +130,12 @@
             <h2>Sintonizador</h2>
 
             <div class="control-group">
-                <label for="country-select">PAÍS</label>
+                <div class="label-row">
+                    <label for="country-select">PAÍS</label>
+                    <button id="btn-fav-country" class="btn-icon-small hidden" title="Añadir a favoritos">
+                        <span class="material-icons-round">star_border</span>
+                    </button>
+                </div>
                 <div class="custom-select-wrapper">
                     <select id="country-select" class="glass-input">
                         <option value="" disabled selected>Selecciona ubicación...</option>

@@ -1130,3 +1130,49 @@ body {
 .btn-logout-premium .material-icons-round {
     font-size: 1.1rem;
 }
+/* --- Small Icon Button (Fav Country) --- */
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.btn-icon-small {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0;
+    line-height: 0;
+    transition: all 0.2s ease;
+}
+
+.btn-icon-small:hover {
+    color: var(--primary);
+    transform: scale(1.1);
+}
+
+.btn-icon-small.active {
+    color: #ffd700; /* Gold */
+}
+
+.btn-icon-small.active .material-icons-round {
+    color: #ffd700;
+}
+
+/* --- Equalizer Interactive --- */
+.eq-band input[type="range"] {
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+}
+
+.eq-band input[type="range"]:active {
+    box-shadow: 0 0 15px var(--primary);
+}
+
+.btn-preset.active {
+    background: var(--primary);
+    color: #000;
+    box-shadow: 0 0 20px var(--primary-glow);
+    border-color: var(--primary);
+}

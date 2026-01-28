@@ -63,6 +63,30 @@ export const Storage = {
         return favs.some(c => c.name === cityName && c.country === countryName);
     },
 
+    // --- Countries ---
+    getFavoriteCountries() {
+        const data = localStorage.getItem('neon_fav_countries');
+        return data ? JSON.parse(data) : [];
+    },
+
+    isFavoriteCountry(countryName) {
+        const favs = this.getFavoriteCountries();
+        return favs.includes(countryName);
+    },
+
+    toggleFavoriteCountry(countryName) {
+        let favs = this.getFavoriteCountries();
+        const index = favs.indexOf(countryName);
+
+        if (index >= 0) {
+            favs.splice(index, 1); // remove
+        } else {
+            favs.push(countryName); // add
+        }
+        localStorage.setItem('neon_fav_countries', JSON.stringify(favs));
+        return index === -1; // true if added
+    },
+
     // --- Recents ---
     getRecents() {
         const data = localStorage.getItem(KEYS.RECENTS);
