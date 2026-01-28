@@ -1285,3 +1285,11 @@ body.immersive-mode #btn-zen-mode:hover {
     background: var(--primary);
     color: #000;
 }
+
+/* Ensure Zen Button is Visible on Mobile */
+@media (max-width: 768px) {
+    #btn-zen-mode {
+        display: flex !important;
+        margin-left: 5px; /* Spacing from play button */
+    }
+}

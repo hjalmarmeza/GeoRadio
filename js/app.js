@@ -228,17 +228,24 @@ if (el.btnViewRecents) {
     });
 }
 
-// Theme Toggle
+// Theme Toggle Logic
+const toggleTheme = () => {
+    const currentCheck = Storage.getTheme();
+    const themes = ['cyan', 'purple', 'gold', 'neon_green'];
+    let idx = themes.indexOf(currentCheck);
+    idx = (idx + 1) % themes.length;
+    const newTheme = themes[idx];
+    applyTheme(newTheme);
+    Storage.setTheme(newTheme);
+};
+
 if (el.btnThemeToggle) {
-    el.btnThemeToggle.addEventListener('click', () => {
-        const currentCheck = Storage.getTheme();
-        const themes = ['cyan', 'purple', 'gold', 'neon_green'];
-        let idx = themes.indexOf(currentCheck);
-        idx = (idx + 1) % themes.length;
-        const newTheme = themes[idx];
-        applyTheme(newTheme);
-        Storage.setTheme(newTheme);
-    });
+    el.btnThemeToggle.addEventListener('click', toggleTheme);
+}
+
+const btnThemeMobile = document.getElementById('btn-theme-toggle-mobile');
+if (btnThemeMobile) {
+    btnThemeMobile.addEventListener('click', toggleTheme);
 }
 
 // Zen Mode Toggle
