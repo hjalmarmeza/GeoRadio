@@ -1437,3 +1437,60 @@ body.immersive-mode .now-playing {
     z-index: 5;
     position: relative;
 }
+
+/* --- ULTIMATE ZEN MODE REFINEMENTS --- */
+
+/* 1. Resize Logo Smaller */
+body.immersive-mode .now-playing img {
+    width: 100px !important;   /* Reduced from 140px */
+    height: 100px !important;
+    margin-bottom: 2rem !important;
+    transform: none !important; /* No zoom */
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.2) !important;
+    position: relative;
+    z-index: 1; /* BEHIND visualizer (visualizer is at z-index 10) */
+    opacity: 0.8; /* Slightly fade logo to emphasize wave */
+}
+
+/* 2. Visualizer Layering: Foreground but behind Text */
+body.immersive-mode #visualizer-canvas {
+    position: fixed !important;
+    top: 50% !important; /* Center vertically manually */
+    left: 0;
+    width: 100vw !important;
+    height: 60vh !important; /* Make it explicitly huge in height */
+    transform: translateY(-50%) !important; /* Center it */
+    z-index: 10 !important; /* IN FRONT of logo (z-index 1) */
+    opacity: 1 !important;
+    pointer-events: none;
+}
+
+/* 3. Text Sizing & Layering */
+body.immersive-mode .track-info {
+    position: relative;
+    z-index: 20 !important; /* IN FRONT of visualizer (z-index 10) */
+}
+
+body.immersive-mode #player-station-name {
+    font-size: 1.4rem !important; /* Reduced from 1.8rem */
+    font-weight: 700;
+    text-shadow: 0 2px 10px rgba(0,0,0,1) !important; /* Strong shadow for readability over wave */
+}
+
+body.immersive-mode #player-status {
+    font-size: 0.9rem !important;
+    margin-top: 5px;
+    background: rgba(0,0,0,0.3); /* Tiny backing for readability */
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+body.immersive-mode .now-playing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    margin: 0 !important;
+    z-index: 5; /* Container level */
+}

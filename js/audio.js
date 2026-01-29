@@ -149,7 +149,7 @@ export class RadioPlayer {
 
                     // Check for Immersive Mode
                     const isImmersive = document.body.classList.contains('immersive-mode');
-                    const ampMultiplier = isImmersive ? 2.5 : 1.0; // Balanced amplitude
+                    const ampMultiplier = isImmersive ? 4.5 : 1.0; // HUGE amplitude
 
                     const yOffset = (wave1 * 15 + wave2 * 10 + wave3 * 20) * envelope * ampMultiplier;
 
