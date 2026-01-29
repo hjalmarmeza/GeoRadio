@@ -1494,3 +1494,46 @@ body.immersive-mode .now-playing {
     margin: 0 !important;
     z-index: 5; /* Container level */
 }
+
+/* --- RESTORE ZEN MODE CONTROLS --- */
+
+/* 1. Force Screen Controls to Visible z-index */
+body.immersive-mode .player-controls {
+    display: flex !important;
+    position: fixed;
+    bottom: 40px;
+    width: 100%;
+    justify-content: center;
+    gap: 20px !important;
+    z-index: 50 !important; /* Above visualizer */
+    transform: scale(1.2) !important;
+}
+
+/* 2. Style Play Button for Zen */
+body.immersive-mode #btn-play {
+    width: 60px !important;
+    height: 60px !important;
+    background: var(--primary);
+    box-shadow: 0 0 20px var(--primary);
+    border-radius: 50%;
+    color: #000;
+}
+
+/* 3. Ensure Exit Button is Clickable */
+body.immersive-mode #btn-zen-mode {
+    display: flex !important;
+    position: fixed !important;
+    top: 30px !important;
+    right: 30px !important;
+    z-index: 1000 !important; /* Topmost */
+    opacity: 0.6 !important;
+    background: rgba(0,0,0,0.5) !important;
+    pointer-events: auto !important;
+}
+
+/* 4. Ensure Sleep Timer is Visible if needed */
+body.immersive-mode #btn-sleep {
+    display: flex !important;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+}
