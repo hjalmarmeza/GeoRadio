@@ -1537,3 +1537,48 @@ body.immersive-mode #btn-sleep {
     background: rgba(255,255,255,0.1);
     color: #fff;
 }
+
+/* --- FINAL FIX FOR ZEN MODE CONTROLS --- */
+
+/* 1. Hide Mobile Navbar in Zen Mode */
+body.immersive-mode .mobile-nav {
+    display: none !important;
+}
+
+/* 2. Fix Controls Layout (Remove transform to untrap fixed children) */
+body.immersive-mode .player-controls {
+    transform: none !important; /* Critical: allows fixed children to stick to viewport */
+    bottom: 15% !important; /* Move up to avoid bottom edge clipping */
+    width: 100%;
+    /* Ensure container doesn't block clicks elsewhere */
+    pointer-events: none; 
+}
+
+/* Enable pointer events on buttons specifically */
+body.immersive-mode .player-controls > button,
+body.immersive-mode .player-controls > div {
+    pointer-events: auto;
+}
+
+/* 3. Scale Buttons Individually */
+body.immersive-mode #btn-play {
+    transform: scale(1.4);
+    margin: 0 20px;
+}
+
+body.immersive-mode .btn-icon {
+    transform: scale(1.2);
+}
+
+/* 4. Fix Exit Button Positioning */
+body.immersive-mode #btn-zen-mode {
+    position: fixed !important;
+    top: 50px !important; /* Safe zone from top notch */
+    right: 20px !important;
+    width: 40px !important;
+    height: 40px !important;
+    background: rgba(255,255,255,0.2) !important;
+    backdrop-filter: blur(4px);
+    z-index: 9999 !important;
+    margin: 0 !important;
+}
