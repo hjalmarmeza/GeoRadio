@@ -1438,16 +1438,20 @@ body.immersive-mode #visualizer-canvas {
         bottom: 0;
         left: 0;
         width: 100%;
-        height: auto;
-        background: rgba(5, 5, 16, 0.95);
+        height: 60px;
+        /* Explicit height */
+        background: rgba(5, 5, 16, 0.98);
+        /* Less transparent for contrast */
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
         border-top: 1px solid var(--glass-border);
-        padding: 10px 0;
+        padding: 5px 0;
         padding-bottom: env(safe-area-inset-bottom);
-        justify-content: space-around;
-        z-index: 1000;
-        box-sizing: border-box;
+        justify-content: space-evenly;
+        /* Better spacing */
+        z-index: 99999;
+        /* Force highest z-index */
+        box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
     }
 
     .nav-item {
@@ -1457,11 +1461,16 @@ body.immersive-mode #visualizer-canvas {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 4px;
+        width: 60px;
+        /* Hit area */
+        gap: 2px;
         font-size: 0.7rem;
         cursor: pointer;
         transition: all 0.3s ease;
-        pointer-events: auto;
+        opacity: 1 !important;
+        /* Force opactiy */
+        visibility: visible !important;
+        pointer-events: auto !important;
     }
 }
 
