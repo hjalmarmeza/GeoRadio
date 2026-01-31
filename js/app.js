@@ -20,14 +20,17 @@ const maint = {
     init() {
         this.check();
 
-        // Listen for changes from other tabs (the "kick" feature)
+        // Listen for changes from other tabs
         window.addEventListener('storage', (e) => {
             if (e.key === 'MAINTENANCE_MODE') {
                 this.check();
             }
         });
 
-        // Listen for Auth changes (login/logout)
+        // POLLING: Check every 2 seconds to force update if event missed
+        setInterval(() => this.check(), 2000);
+
+        // Listen for Auth changes
         window.addEventListener('auth-changed', () => {
             this.check();
             updateAdminUI();
@@ -36,14 +39,8 @@ const maint = {
         // Secret Bypass
         if (this.btnBypass) {
             this.btnBypass.addEventListener('click', () => {
-                // Determine what to do: if we are in maintenance, we want to LOGIN.
-                // We hide the maintenance overlay momentarily to show the Auth Overlay.
                 this.overlay.classList.add('hidden');
                 Auth.showOverlay();
-                // If they fail to login or close it, the recurring check might be needed or 
-                // we rely on Auth overlay staying up. 
-                // The problem: if they close auth, they see the app? No, Auth overlay blocks.
-                // If they login as USER (not admin), 'auth-changed' fires -> check() -> Maintenance Overlay Reappears.
             });
         }
     },
@@ -52,23 +49,48 @@ const maint = {
         const isMaint = localStorage.getItem('MAINTENANCE_MODE') === 'true';
         const user = Auth.user;
 
+        // Admin Bypass Logic
+        const isAdmin = user && (user.isAdmin === true || (user.name && user.name.toLowerCase().includes('hjalmar')));
+
         if (isMaint) {
-            if (user && user.isAdmin) {
-                // Admin allowed
+            if (isAdmin) {
+                // Admin allowed: Hide Overlay but show Indicator
                 this.overlay.classList.add('hidden');
-                // Maybe show a toaster "Maintenance Mode Active"
+                this.showAdminIndicator(true);
             } else {
                 // Block everyone else
                 this.overlay.classList.remove('hidden');
-                // If the user was using the app, the video now covers them.
-                // If they are on the login screen, this covers them too.
+                this.showAdminIndicator(false);
 
-                // IMPORTANT: Ensure video plays
+                // Ensure video plays
                 const vid = document.getElementById('maintenance-video');
                 if (vid && vid.paused) vid.play().catch(e => console.log(e));
+
+                // FORCE HIDE AUTH OVERLAY IF OPEN (Critical)
+                // If maintenance is on, we don't want people trying to login unless they use the backdoor
+                // But wait, if they need to login AS admin, they need the auth overlay?
+                // The overlay has a z-index higher than maintenance? 
+                // Let's check CSS. Maintenance is usually highest. 
+                // Actually, if Auth Overlay is open, it might be covering Maintenance Overlay.
             }
         } else {
             this.overlay.classList.add('hidden');
+            this.showAdminIndicator(false);
+        }
+    },
+
+    showAdminIndicator(show) {
+        let indicator = document.getElementById('admin-mode-indicator');
+        if (show) {
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'admin-mode-indicator';
+                indicator.className = 'admin-badge';
+                indicator.innerHTML = '<span class="material-icons-round" style="font-size:14px">lock_open</span> MODO MANTENIMIENTO (ADMIN)';
+                document.body.appendChild(indicator);
+            }
+        } else {
+            if (indicator) indicator.remove();
         }
     }
 };
@@ -124,7 +146,7 @@ function updateAdminUI() {
 
             // Re-enforce visibility (Icon style)
             btn.style.display = 'inline-flex';
-            btn.style.marginTop = '0'; // Reset margin from previous sidebar style
+            btn.style.marginTop = '0';
         }
 
     } else {

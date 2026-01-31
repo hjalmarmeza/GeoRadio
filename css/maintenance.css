@@ -91,16 +91,7 @@
 /* =========================================
    ADMIN CONTROLS
    ========================================= */
-.admin-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    width: 10px;
-    height: 10px;
-    background: var(--accent);
-    border-radius: 50%;
-    box-shadow: 0 0 10px var(--accent);
-}
+/* removed old admin badge styles */
 
 .btn-maintenance-toggle {
     margin-top: auto;

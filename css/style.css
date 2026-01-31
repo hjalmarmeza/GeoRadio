@@ -1130,6 +1130,7 @@ body {
 .btn-logout-premium .material-icons-round {
     font-size: 1.1rem;
 }
+
 /* --- Small Icon Button (Fav Country) --- */
 .label-row {
     display: flex;
@@ -1154,7 +1155,8 @@ body {
 }
 
 .btn-icon-small.active {
-    color: #ffd700; /* Gold */
+    color: #ffd700;
+    /* Gold */
 }
 
 .btn-icon-small.active .material-icons-round {
@@ -1163,7 +1165,7 @@ body {
 
 /* --- Equalizer Interactive --- */
 .eq-band input[type="range"] {
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .eq-band input[type="range"]:active {
@@ -1187,7 +1189,7 @@ body.immersive-mode {
 body.immersive-mode .main-sidebar,
 body.immersive-mode .main-header,
 body.immersive-mode .app-grid,
-body.immersive-mode .filters-panel, 
+body.immersive-mode .filters-panel,
 body.immersive-mode .auth-overlay {
     display: none !important;
 }
@@ -1230,7 +1232,7 @@ body.immersive-mode .now-playing img {
     width: 150px;
     height: 150px;
     margin-bottom: 1rem;
-    box-shadow: 0 0 50px rgba(0,0,0,0.5);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
 }
 
 body.immersive-mode .player-controls {
@@ -1244,7 +1246,8 @@ body.immersive-mode .player-controls {
 
 body.immersive-mode .volume-control,
 body.immersive-mode .player-extra-controls {
-    display: none; /* Hide extra controls in Zen mode for purity */
+    display: none;
+    /* Hide extra controls in Zen mode for purity */
 }
 
 /* Close Zen Mode Button (Using the fullscreen button) */
@@ -1254,13 +1257,14 @@ body.immersive-mode #btn-zen-mode {
     right: 2rem;
     z-index: 10;
     transform: scale(1.5);
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
 }
 
 /* Improve Zen Mode Amplitude */
 body.immersive-mode #visualizer-canvas {
-    opacity: 0.8; /* Brighter */
+    opacity: 0.8;
+    /* Brighter */
 }
 
 /* Zen Mode Exit Button - ensure visibility */
@@ -1272,8 +1276,8 @@ body.immersive-mode #btn-zen-mode {
     z-index: 10000;
     width: 50px;
     height: 50px;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 50%;
     color: #fff;
     align-items: center;
@@ -1281,6 +1285,7 @@ body.immersive-mode #btn-zen-mode {
     cursor: pointer;
     backdrop-filter: blur(10px);
 }
+
 body.immersive-mode #btn-zen-mode:hover {
     background: var(--primary);
     color: #000;
@@ -1290,12 +1295,14 @@ body.immersive-mode #btn-zen-mode:hover {
 @media (max-width: 768px) {
     #btn-zen-mode {
         display: flex !important;
-        margin-left: 5px; /* Spacing from play button */
+        margin-left: 5px;
+        /* Spacing from play button */
     }
 }
 
 /* Fix Mobile Layout Stability */
-html, body {
+html,
+body {
     max-width: 100vw;
     overflow-x: hidden;
 }
@@ -1317,7 +1324,7 @@ html, body {
         display: flex;
         align-items: center;
     }
-    
+
     #btn-zen-mode {
         display: flex !important;
         width: 32px;
@@ -1328,7 +1335,7 @@ html, body {
         border-radius: 50%;
         margin-left: 8px;
     }
-    
+
     #btn-zen-mode .material-icons-round {
         font-size: 1.2rem;
     }
@@ -1344,20 +1351,25 @@ html, body {
 
 /* 1. Make Logo Huge */
 body.immersive-mode .now-playing img {
-    width: 280px !important;    /* Much bigger */
+    width: 280px !important;
+    /* Much bigger */
     height: 280px !important;
     margin-bottom: 2rem !important;
-    transform: scale(1.2);      /* Extra pop */
-    box-shadow: 0 0 80px rgba(0, 243, 255, 0.3) !important; /* Larger glow */
+    transform: scale(1.2);
+    /* Extra pop */
+    box-shadow: 0 0 80px rgba(0, 243, 255, 0.3) !important;
+    /* Larger glow */
 }
 
 /* 2. Tiny Exit Button */
 body.immersive-mode #btn-zen-mode {
-    width: 30px !important;    /* Smaller */
+    width: 30px !important;
+    /* Smaller */
     height: 30px !important;
     top: 30px !important;
     right: 30px !important;
-    opacity: 0.4;              /* Fade it out so it's not distracting */
+    opacity: 0.4;
+    /* Fade it out so it's not distracting */
     border: none !important;
     background: transparent !important;
     transition: opacity 0.3s;
@@ -1365,25 +1377,29 @@ body.immersive-mode #btn-zen-mode {
 
 body.immersive-mode #btn-zen-mode:hover {
     opacity: 1;
-    background: rgba(255,255,255,0.1) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
 }
 
 body.immersive-mode #btn-zen-mode .material-icons-round {
-    font-size: 1.2rem !important; /* Smaller icon */
+    font-size: 1.2rem !important;
+    /* Smaller icon */
 }
 
 /* 3. Massive Sound Graph */
 body.immersive-mode #visualizer-canvas {
-    height: 120% !important; /* Taller than screen to cover everything */
-    opacity: 0.9 !important; /* Very visible */
-    transform: scaleY(1.5);  /* Stretch vertically for drama */
+    height: 120% !important;
+    /* Taller than screen to cover everything */
+    opacity: 0.9 !important;
+    /* Very visible */
+    transform: scaleY(1.5);
+    /* Stretch vertically for drama */
 }
 
 /* Adjust text size for balance */
 body.immersive-mode #player-station-name {
     font-size: 2rem !important;
     font-weight: 800;
-    text-shadow: 0 0 20px rgba(0,0,0,0.8);
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
 }
 
 body.immersive-mode #player-status {
@@ -1395,7 +1411,8 @@ body.immersive-mode #player-status {
 
 /* 1. Resize Logo to be moderate (not huge) */
 body.immersive-mode .now-playing img {
-    width: 140px !important;  /* Reduced from 280px */
+    width: 140px !important;
+    /* Reduced from 280px */
     height: 140px !important;
     margin-bottom: 2rem !important;
     transform: scale(1.1) !important;
@@ -1408,22 +1425,107 @@ body.immersive-mode #visualizer-canvas {
     top: 0;
     left: 0;
     width: 100vw !important;
+
+    /* Mobile Nav */
+    .mobile-nav {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(5, 5, 16, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid var(--glass-border);
+        padding: 10px 0;
+        padding-bottom: env(safe-area-inset-bottom);
+        justify-content: space-around;
+        z-index: 1000;
+    }
+
+    .nav-item {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.7rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        pointer-events: auto;
+    }
+
+    .nav-item span.material-icons-round {
+        font-size: 1.5rem;
+    }
+
+    /* Admin Badge Indicator */
+    .admin-badge {
+        position: fixed;
+        bottom: 100px;
+        /* Above player bar */
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255, 0, 85, 0.9);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        pointer-events: none;
+        z-index: 9999;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    @media (min-width: 769px) {
+        .admin-badge {
+            bottom: 110px;
+        }
+    }
+
+    .nav-item.active {
+        color: var(--accent);
+    }
+
+    .nav-item.active span.material-icons-round {
+        text-shadow: 0 0 10px var(--accent);
+    }
+
+    /* Ensure buttons are clickable */
+    button,
+    .btn-icon,
+    .btn-icon-small,
+    .nav-item {
+        pointer-events: auto;
+        position: relative;
+        z-index: 10;
+    }
+
     height: 100vh !important;
-    z-index: 1 !important; /* Behind text (z-index 2) but clearly visible */
+    z-index: 1 !important;
+    /* Behind text (z-index 2) but clearly visible */
     opacity: 1 !important;
-    transform: none !important; /* Reset scale, let logic handle logic */
+    transform: none !important;
+    /* Reset scale, let logic handle logic */
     pointer-events: none;
 }
 
 body.immersive-mode .player-bar {
-    background: rgba(5, 5, 10, 0.85) !important; /* Slightly transparent to see waves if they go behind */
+    background: rgba(5, 5, 10, 0.85) !important;
+    /* Slightly transparent to see waves if they go behind */
     z-index: 100 !important;
 }
 
 /* Reset scale of text to be elegant */
 body.immersive-mode #player-station-name {
     font-size: 1.8rem !important;
-    text-shadow: 0 0 10px rgba(0,0,0,0.8);
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
     position: relative;
     z-index: 5;
 }
@@ -1442,25 +1544,33 @@ body.immersive-mode .now-playing {
 
 /* 1. Resize Logo Smaller */
 body.immersive-mode .now-playing img {
-    width: 100px !important;   /* Reduced from 140px */
+    width: 100px !important;
+    /* Reduced from 140px */
     height: 100px !important;
     margin-bottom: 2rem !important;
-    transform: none !important; /* No zoom */
+    transform: none !important;
+    /* No zoom */
     box-shadow: 0 0 30px rgba(0, 243, 255, 0.2) !important;
     position: relative;
-    z-index: 1; /* BEHIND visualizer (visualizer is at z-index 10) */
-    opacity: 0.8; /* Slightly fade logo to emphasize wave */
+    z-index: 1;
+    /* BEHIND visualizer (visualizer is at z-index 10) */
+    opacity: 0.8;
+    /* Slightly fade logo to emphasize wave */
 }
 
 /* 2. Visualizer Layering: Foreground but behind Text */
 body.immersive-mode #visualizer-canvas {
     position: fixed !important;
-    top: 50% !important; /* Center vertically manually */
+    top: 50% !important;
+    /* Center vertically manually */
     left: 0;
     width: 100vw !important;
-    height: 60vh !important; /* Make it explicitly huge in height */
-    transform: translateY(-50%) !important; /* Center it */
-    z-index: 10 !important; /* IN FRONT of logo (z-index 1) */
+    height: 60vh !important;
+    /* Make it explicitly huge in height */
+    transform: translateY(-50%) !important;
+    /* Center it */
+    z-index: 10 !important;
+    /* IN FRONT of logo (z-index 1) */
     opacity: 1 !important;
     pointer-events: none;
 }
@@ -1468,19 +1578,23 @@ body.immersive-mode #visualizer-canvas {
 /* 3. Text Sizing & Layering */
 body.immersive-mode .track-info {
     position: relative;
-    z-index: 20 !important; /* IN FRONT of visualizer (z-index 10) */
+    z-index: 20 !important;
+    /* IN FRONT of visualizer (z-index 10) */
 }
 
 body.immersive-mode #player-station-name {
-    font-size: 1.4rem !important; /* Reduced from 1.8rem */
+    font-size: 1.4rem !important;
+    /* Reduced from 1.8rem */
     font-weight: 700;
-    text-shadow: 0 2px 10px rgba(0,0,0,1) !important; /* Strong shadow for readability over wave */
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 1) !important;
+    /* Strong shadow for readability over wave */
 }
 
 body.immersive-mode #player-status {
     font-size: 0.9rem !important;
     margin-top: 5px;
-    background: rgba(0,0,0,0.3); /* Tiny backing for readability */
+    background: rgba(0, 0, 0, 0.3);
+    /* Tiny backing for readability */
     padding: 2px 8px;
     border-radius: 10px;
 }
@@ -1492,7 +1606,8 @@ body.immersive-mode .now-playing {
     justify-content: center;
     height: 100%;
     margin: 0 !important;
-    z-index: 5; /* Container level */
+    z-index: 5;
+    /* Container level */
 }
 
 /* --- RESTORE ZEN MODE CONTROLS --- */
@@ -1505,7 +1620,8 @@ body.immersive-mode .player-controls {
     width: 100%;
     justify-content: center;
     gap: 20px !important;
-    z-index: 50 !important; /* Above visualizer */
+    z-index: 50 !important;
+    /* Above visualizer */
     transform: scale(1.2) !important;
 }
 
@@ -1525,16 +1641,17 @@ body.immersive-mode #btn-zen-mode {
     position: fixed !important;
     top: 30px !important;
     right: 30px !important;
-    z-index: 1000 !important; /* Topmost */
+    z-index: 1000 !important;
+    /* Topmost */
     opacity: 0.6 !important;
-    background: rgba(0,0,0,0.5) !important;
+    background: rgba(0, 0, 0, 0.5) !important;
     pointer-events: auto !important;
 }
 
 /* 4. Ensure Sleep Timer is Visible if needed */
 body.immersive-mode #btn-sleep {
     display: flex !important;
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
     color: #fff;
 }
 
@@ -1547,16 +1664,18 @@ body.immersive-mode .mobile-nav {
 
 /* 2. Fix Controls Layout (Remove transform to untrap fixed children) */
 body.immersive-mode .player-controls {
-    transform: none !important; /* Critical: allows fixed children to stick to viewport */
-    bottom: 15% !important; /* Move up to avoid bottom edge clipping */
+    transform: none !important;
+    /* Critical: allows fixed children to stick to viewport */
+    bottom: 15% !important;
+    /* Move up to avoid bottom edge clipping */
     width: 100%;
     /* Ensure container doesn't block clicks elsewhere */
-    pointer-events: none; 
+    pointer-events: none;
 }
 
 /* Enable pointer events on buttons specifically */
-body.immersive-mode .player-controls > button,
-body.immersive-mode .player-controls > div {
+body.immersive-mode .player-controls>button,
+body.immersive-mode .player-controls>div {
     pointer-events: auto;
 }
 
@@ -1573,15 +1692,17 @@ body.immersive-mode .btn-icon {
 /* 4. Fix Exit Button Positioning */
 body.immersive-mode #btn-zen-mode {
     position: fixed !important;
-    top: 50px !important; /* Safe zone from top notch */
+    top: 50px !important;
+    /* Safe zone from top notch */
     right: 20px !important;
     width: 40px !important;
     height: 40px !important;
-    background: rgba(255,255,255,0.2) !important;
+    background: rgba(255, 255, 255, 0.2) !important;
     backdrop-filter: blur(4px);
     z-index: 9999 !important;
     margin: 0 !important;
 }
+
 /* =========================================
    MAINTENANCE OVERLAY
    ========================================= */
