@@ -12,6 +12,127 @@ if ('serviceWorker' in navigator) {
     });
 }
 
+// --- MAINTENANCE & ADMIN LOGIC ---
+const maint = {
+    overlay: document.getElementById('maintenance-overlay'),
+    btnBypass: document.getElementById('btn-admin-bypass'),
+
+    init() {
+        this.check();
+
+        // Listen for changes from other tabs (the "kick" feature)
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'MAINTENANCE_MODE') {
+                this.check();
+            }
+        });
+
+        // Listen for Auth changes (login/logout)
+        window.addEventListener('auth-changed', () => {
+            this.check();
+            updateAdminUI();
+        });
+
+        // Secret Bypass
+        if (this.btnBypass) {
+            this.btnBypass.addEventListener('click', () => {
+                // Determine what to do: if we are in maintenance, we want to LOGIN.
+                // We hide the maintenance overlay momentarily to show the Auth Overlay.
+                this.overlay.classList.add('hidden');
+                Auth.showOverlay();
+                // If they fail to login or close it, the recurring check might be needed or 
+                // we rely on Auth overlay staying up. 
+                // The problem: if they close auth, they see the app? No, Auth overlay blocks.
+                // If they login as USER (not admin), 'auth-changed' fires -> check() -> Maintenance Overlay Reappears.
+            });
+        }
+    },
+
+    check() {
+        const isMaint = localStorage.getItem('MAINTENANCE_MODE') === 'true';
+        const user = Auth.user;
+
+        if (isMaint) {
+            if (user && user.isAdmin) {
+                // Admin allowed
+                this.overlay.classList.add('hidden');
+                // Maybe show a toaster "Maintenance Mode Active"
+            } else {
+                // Block everyone else
+                this.overlay.classList.remove('hidden');
+                // If the user was using the app, the video now covers them.
+                // If they are on the login screen, this covers them too.
+
+                // IMPORTANT: Ensure video plays
+                const vid = document.getElementById('maintenance-video');
+                if (vid && vid.paused) vid.play().catch(e => console.log(e));
+            }
+        } else {
+            this.overlay.classList.add('hidden');
+        }
+    }
+};
+
+function updateAdminUI() {
+    // Add Toggle Button to Sidebar if Admin
+    const user = Auth.user;
+
+    // Robust check: Check isAdmin boolean OR name 'Hjalmar'
+    const isAdmin = user && (user.isAdmin === true || (user.name && user.name.toLowerCase().includes('hjalmar')));
+
+    // Always try to find the existing button to remove it if not admin
+    // Always try to find the existing button
+    const btn = document.getElementById('btn-maint-toggle');
+
+    if (isAdmin) {
+        if (btn) {
+            btn.classList.remove('hidden'); // Show it
+
+            // Re-apply listener logic ensuring no duplicates
+            btn.onclick = () => {
+                const current = localStorage.getItem('MAINTENANCE_MODE') === 'true';
+                const newState = !current;
+                localStorage.setItem('MAINTENANCE_MODE', newState);
+                maint.check();
+                updateAdminUI();
+            };
+
+            // Force visual styles for maximum visibility
+            btn.style.display = 'flex';
+            btn.style.marginTop = '1.5rem';
+        }
+
+        // Update State Visually
+        const isMaint = localStorage.getItem('MAINTENANCE_MODE') === 'true';
+
+        if (btn) {
+            if (isMaint) {
+                btn.classList.add('active');
+                btn.innerHTML = '<span class="material-icons-round">warning</span>';
+                btn.style.color = '#ff0055';
+                btn.style.background = 'transparent';
+                btn.title = "DESACTIVAR MANTENIMIENTO";
+                btn.style.animation = "pulse 1.5s infinite";
+            } else {
+                btn.classList.remove('active');
+                btn.innerHTML = '<span class="material-icons-round">build</span>';
+                btn.style.color = 'var(--accent)';
+                btn.style.background = 'transparent';
+                btn.title = "ACTIVAR MANTENIMIENTO";
+                btn.style.animation = "none";
+            }
+
+            // Re-enforce visibility (Icon style)
+            btn.style.display = 'inline-flex';
+            btn.style.marginTop = '0'; // Reset margin from previous sidebar style
+        }
+
+    } else {
+        if (btn) btn.classList.add('hidden'); // Hide if not admin
+    }
+}
+
+
 // --- State ---
 const state = {
     selectedCountry: null,
@@ -89,6 +210,9 @@ const player = new RadioPlayer();
 // --- Initialization ---
 async function init() {
     Auth.init(); // Initialize Auth System
+    maint.init(); // Initialize Maintenance System
+    updateAdminUI(); // Check if admin UI needed
+    setTimeout(updateAdminUI, 1000); // Fail-safe re-check for DOM/Auth timing
     applyTheme(Storage.getTheme()); // Apply saved theme
 
     setupEventListeners();

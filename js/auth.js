@@ -13,6 +13,14 @@ export const Auth = {
         const saved = localStorage.getItem('georadio_user');
         if (saved) {
             this.user = JSON.parse(saved);
+
+            // Retroactive Admin Fix: If name is Hjalmar, ensure isAdmin is true
+            if (this.user.name && this.user.name.includes("Hjalmar") && !this.user.isAdmin) {
+                this.user.isAdmin = true;
+                this.user.id = "SUPER_ADMIN";
+                localStorage.setItem('georadio_user', JSON.stringify(this.user));
+            }
+
             this.hideOverlay();
         } else {
             this.showOverlay();
@@ -212,6 +220,7 @@ export const Auth = {
         this.user = user;
         localStorage.setItem('georadio_user', JSON.stringify(user));
         this.hideOverlay();
+        window.dispatchEvent(new CustomEvent('auth-changed', { detail: { user } }));
     },
 
     logout() {
@@ -220,6 +229,7 @@ export const Auth = {
         localStorage.removeItem('georadio_user');
         this.showOverlay();
         this.toggleForms('login');
+        window.dispatchEvent(new CustomEvent('auth-changed', { detail: { user: null } }));
     },
 
     showOverlay() {

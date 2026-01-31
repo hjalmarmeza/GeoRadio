@@ -8,6 +8,7 @@
     <meta name="description" content="Explora radios FM locales de todo el mundo con una interfaz futurista.">
     <meta name="theme-color" content="#050510">
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3659/3659784.png">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3659/3659784.png">
 
     <!-- Fonts -->
@@ -16,6 +17,15 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;700;900&display=swap"
         rel="stylesheet">
+    <!-- ... (skipping unchanged lines) ... -->
+    <button class="btn-ghost" id="btn-view-recents">
+        <span class="material-icons-round">history</span> Recientes
+    </button>
+
+    <!-- Admin Maintenance Button (Hidden by default) -->
+    <button id="btn-maint-toggle" class="btn-maintenance-toggle hidden" style="margin-top: auto;">
+        <span class="material-icons-round">build</span> MANTENIMIENTO
+    </button>
 
     <!-- Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
@@ -33,6 +43,22 @@
 <body>
     <div class="app-background"></div>
     <div class="app-glow"></div>
+
+    <!-- Maintenance Overlay -->
+    <div id="maintenance-overlay" class="maintenance-overlay hidden">
+        <video autoplay muted loop playsinline id="maintenance-video">
+            <source src="https://res.cloudinary.com/dveqs8f3n/video/upload/v1769896689/mantenimiento1_y9pqy4.mp4"
+                type="video/mp4">
+        </video>
+        <div class="maintenance-content">
+            <div class="maintenance-message">
+                <h2>EN MANTENIMIENTO</h2>
+                <p>Estamos recargando las frecuencias. Volvemos en breve.</p>
+            </div>
+            <!-- Secret Admin Trigger -->
+            <button id="btn-admin-bypass" class="btn-secret" title="Acceso Admin">.</button>
+        </div>
+    </div>
 
     <!-- Auth Overlay (Starts visible if not logged in) -->
     <div id="auth-overlay" class="auth-overlay hidden">
@@ -118,6 +144,11 @@
             <div class="status-indicator">
                 <span class="pulse"></span> LIVE
             </div>
+            <!-- Admin Maintenance Icon (Header) -->
+            <button id="btn-maint-toggle" class="btn-icon hidden" title="Modo Mantenimiento"
+                style="color: var(--accent);">
+                <span class="material-icons-round">build</span>
+            </button>
             <button id="btn-theme-toggle" class="btn-icon" title="Cambiar Tema">
                 <span class="material-icons-round">palette</span>
             </button>
