@@ -166,7 +166,7 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMr1zDSXijKH
 
 export async function checkMaintenanceStatus() {
     try {
-        const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=check_status`);
+        const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=check_status&t=${Date.now()}`);
         const data = await res.json();
         return data.maintenance === true;
     } catch (e) {
