@@ -43,7 +43,7 @@ const maint = {
                 this.check();
                 updateAdminUI(); // Update button state if user is admin
             }
-        }, 60000); // 1 minute
+        }, 10000); // 10 seconds
 
         // Listen for Auth changes
         window.addEventListener('auth-changed', () => {
