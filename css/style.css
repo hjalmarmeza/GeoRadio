@@ -1425,95 +1425,99 @@ body.immersive-mode #visualizer-canvas {
     top: 0;
     left: 0;
     width: 100vw !important;
-
-    /* Mobile Nav */
-    .mobile-nav {
-        display: none;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background: rgba(5, 5, 16, 0.95);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border-top: 1px solid var(--glass-border);
-        padding: 10px 0;
-        padding-bottom: env(safe-area-inset-bottom);
-        justify-content: space-around;
-        z-index: 1000;
-    }
-
-    .nav-item {
-        background: none;
-        border: none;
-        color: var(--text-muted);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 4px;
-        font-size: 0.7rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        pointer-events: auto;
-    }
-
-    .nav-item span.material-icons-round {
-        font-size: 1.5rem;
-    }
-
-    /* Admin Badge Indicator */
-    .admin-badge {
-        position: fixed;
-        bottom: 100px;
-        /* Above player bar */
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(255, 0, 85, 0.9);
-        color: white;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        pointer-events: none;
-        z-index: 9999;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    @media (min-width: 769px) {
-        .admin-badge {
-            bottom: 110px;
-        }
-    }
-
-    .nav-item.active {
-        color: var(--accent);
-    }
-
-    .nav-item.active span.material-icons-round {
-        text-shadow: 0 0 10px var(--accent);
-    }
-
-    /* Ensure buttons are clickable */
-    button,
-    .btn-icon,
-    .btn-icon-small,
-    .nav-item {
-        pointer-events: auto;
-        position: relative;
-        z-index: 10;
-    }
-
     height: 100vh !important;
     z-index: 1 !important;
-    /* Behind text (z-index 2) but clearly visible */
     opacity: 1 !important;
-    transform: none !important;
-    /* Reset scale, let logic handle logic */
+}
+
+/* Mobile Nav */
+.mobile-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(5, 5, 16, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--glass-border);
+    padding: 10px 0;
+    padding-bottom: env(safe-area-inset-bottom);
+    justify-content: space-around;
+    z-index: 1000;
+}
+
+.nav-item {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    pointer-events: auto;
+}
+
+.nav-item span.material-icons-round {
+    font-size: 1.5rem;
+}
+
+/* Admin Badge Indicator */
+.admin-badge {
+    position: fixed;
+    bottom: 100px;
+    /* Above player bar */
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 0, 85, 0.9);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
     pointer-events: none;
+    z-index: 9999;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@media (min-width: 769px) {
+    .admin-badge {
+        bottom: 110px;
+    }
+}
+
+.nav-item.active {
+    color: var(--accent);
+}
+
+.nav-item.active span.material-icons-round {
+    text-shadow: 0 0 10px var(--accent);
+}
+
+/* Ensure buttons are clickable */
+button,
+.btn-icon,
+.btn-icon-small,
+.nav-item {
+    pointer-events: auto;
+    position: relative;
+    z-index: 10;
+}
+
+height: 100vh !important;
+z-index: 1 !important;
+/* Behind text (z-index 2) but clearly visible */
+opacity: 1 !important;
+transform: none !important;
+/* Reset scale, let logic handle logic */
+pointer-events: none;
 }
 
 body.immersive-mode .player-bar {
