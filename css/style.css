@@ -1430,35 +1430,39 @@ body.immersive-mode #visualizer-canvas {
     opacity: 1 !important;
 }
 
-/* Mobile Nav */
-.mobile-nav {
-    display: none;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: rgba(5, 5, 16, 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid var(--glass-border);
-    padding: 10px 0;
-    padding-bottom: env(safe-area-inset-bottom);
-    justify-content: space-around;
-    z-index: 1000;
-}
+/* Mobile Nav - Only Visible on Mobile */
+@media (max-width: 768px) {
+    .mobile-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: auto;
+        background: rgba(5, 5, 16, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid var(--glass-border);
+        padding: 10px 0;
+        padding-bottom: env(safe-area-inset-bottom);
+        justify-content: space-around;
+        z-index: 1000;
+        box-sizing: border-box;
+    }
 
-.nav-item {
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.7rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    pointer-events: auto;
+    .nav-item {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.7rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        pointer-events: auto;
+    }
 }
 
 .nav-item span.material-icons-round {
@@ -1511,14 +1515,7 @@ button,
     z-index: 10;
 }
 
-height: 100vh !important;
-z-index: 1 !important;
-/* Behind text (z-index 2) but clearly visible */
-opacity: 1 !important;
-transform: none !important;
-/* Reset scale, let logic handle logic */
-pointer-events: none;
-}
+
 
 body.immersive-mode .player-bar {
     background: rgba(5, 5, 10, 0.85) !important;
