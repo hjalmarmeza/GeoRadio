@@ -27,8 +27,23 @@ const maint = {
             }
         });
 
-        // POLLING: Check every 2 seconds to force update if event missed
+        // 1. LOCAL POLLING (Fast, 2s) for multi-tab sync
         setInterval(() => this.check(), 2000);
+
+        // 2. REMOTE POLLING (Slow, 60s) for global sync
+        // As requested by user: Check every 1 minute
+        setInterval(async () => {
+            const isGlobalMaintenance = await API.checkMaintenanceStatus();
+            // Only update if different from local to avoid spam
+            const currentLocal = localStorage.getItem('MAINTENANCE_MODE') === 'true';
+
+            if (isGlobalMaintenance !== currentLocal) {
+                console.log("Global maintenance state changed:", isGlobalMaintenance);
+                localStorage.setItem('MAINTENANCE_MODE', isGlobalMaintenance);
+                this.check();
+                updateAdminUI(); // Update button state if user is admin
+            }
+        }, 60000); // 1 minute
 
         // Listen for Auth changes
         window.addEventListener('auth-changed', () => {
@@ -111,12 +126,21 @@ function updateAdminUI() {
             btn.classList.remove('hidden'); // Show it
 
             // Re-apply listener logic ensuring no duplicates
-            btn.onclick = () => {
+            btn.onclick = async () => {
                 const current = localStorage.getItem('MAINTENANCE_MODE') === 'true';
                 const newState = !current;
+
+                // Optimistic Local Update
                 localStorage.setItem('MAINTENANCE_MODE', newState);
                 maint.check();
                 updateAdminUI();
+
+                // Send to Server
+                const success = await API.setMaintenanceStatus(newState);
+                if (!success) {
+                    console.error("Failed to sync maintenance status with server");
+                    alert("Error al sincronizar con el servidor. El cambio es solo local.");
+                }
             };
 
             // Force visual styles for maximum visibility

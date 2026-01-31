@@ -153,3 +153,35 @@ export async function getStations(countryName, cityName, limit = 100) {
     const data = await fetchWithFallback(endpoint);
     return enrichWithWhatsApp(data || []);
 }
+
+
+// --- MAINTENANCE API ---
+// Using the same API_URL from auth.js if possible, or define it here.
+// Since Auth.js has it, we should probably import it or duplicate it.
+// To keep it simple and clean, let's hardcode it here or assume Auth handles it.
+// Better: Let's export these from here, but they need the Google Script URL.
+// We will use a shared constant file or just duplicate the URL for robustness.
+
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMr1zDSXijKHEF2gltuLOJTGAflMjQh90Z9tiwdARk3SfCCfg8ehTyhVa1vN5bTIzb/exec";
+
+export async function checkMaintenanceStatus() {
+    try {
+        const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=check_status`);
+        const data = await res.json();
+        return data.maintenance === true;
+    } catch (e) {
+        console.warn("Maint check fail:", e);
+        return false; // Fail open (assume works) or closed? Open is safer for user experience if server down.
+    }
+}
+
+export async function setMaintenanceStatus(isAdminMode) {
+    try {
+        const val = isAdminMode ? "TRUE" : "FALSE";
+        await fetch(`${GOOGLE_SCRIPT_URL}?action=set_maintenance&value=${val}`, { method: 'POST' });
+        return true;
+    } catch (e) {
+        console.error("Maint set fail:", e);
+        return false;
+    }
+}
