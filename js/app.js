@@ -43,7 +43,7 @@ const maint = {
                 this.check();
                 updateAdminUI(); // Update button state if user is admin
             }
-        }, 10000); // 10 seconds
+        }, 60000); // 1 minute
 
         // Listen for Auth changes
         window.addEventListener('auth-changed', () => {
@@ -707,7 +707,15 @@ function renderStationsList(container, stations, isFavView = false) {
     });
 }
 
-function playStation(station) {
+async function playStation(station) {
+    // PRE-CHECK: Maintenance Mode (Save Quota by checking on demand instead of fast polling)
+    if (await API.checkMaintenanceStatus()) {
+        localStorage.setItem('MAINTENANCE_MODE', 'true');
+        maint.check();
+        // If locked out (not admin), stop
+        if (!document.getElementById('maintenance-overlay').classList.contains('hidden')) return;
+    }
+
     state.currentStation = station;
 
     // Update UI
