@@ -282,7 +282,9 @@ export const Auth = {
     },
 
     showOverlay() {
-        document.getElementById('auth-overlay').classList.remove('hidden');
+        const overlay = document.getElementById('auth-overlay');
+        overlay.classList.remove('hidden');
+        overlay.style.zIndex = '2147483647'; // FORCE TOP
     },
 
     hideOverlay() {
