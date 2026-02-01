@@ -743,6 +743,9 @@ async function playStation(station) {
     // Play
     Storage.addRecent(station); // Add to history
     player.play(station.url_resolved || station.url);
+
+    // Stop Idle Timer because we are listening
+    Auth.stopIdleTimer();
 }
 
 // --- Player Callbacks ---
@@ -759,22 +762,26 @@ function setupPlayerCallbacks() {
         el.playerStatus.style.color = "var(--text-muted)";
         el.playIcon.textContent = "play_arrow";
         el.btnPlay.classList.remove('playing');
+        Auth.startIdleTimer();
     };
 
     player.onError = () => {
         el.playerStatus.textContent = "Error de conexión";
         el.playerStatus.style.color = "var(--accent)";
         el.playIcon.textContent = "error_outline";
+        Auth.startIdleTimer();
     };
 
     player.onLoadStart = () => {
         el.playerStatus.textContent = "Buffering...";
+        Auth.stopIdleTimer(); // Loading counts as activity
     };
 
     player.onTimerEnd = () => {
         el.playerStatus.textContent = "Zzz... (Sleep)";
         el.playerStatus.style.color = "var(--secondary)";
         el.btnSleep.classList.remove('active');
+        Auth.startIdleTimer(); // Sleep ended playback -> start idle
     };
 }
 

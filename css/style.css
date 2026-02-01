@@ -967,8 +967,8 @@ body {
     width: 100%;
     height: 100%;
     background: var(--bg-deep);
-    z-index: 999999;
-    /* Higher than mobile nav */
+    z-index: 2147483647 !important;
+    /* Topmost layer (allows login during maintenance) */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1723,8 +1723,9 @@ body.immersive-mode #btn-zen-mode {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 2147483647 !important;
-    /* Above everything */
+    z-index: 2147483640 !important;
+    /* High, but below Auth Overlay */
+    /* Above everything else */
     background: #000;
     display: flex;
     flex-direction: column;

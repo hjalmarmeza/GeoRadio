@@ -1,12 +1,11 @@
-/*
- * Manage Authentication State & API Calls
- */
+import { checkMaintenanceStatus } from './api.js';
 
 // THIS URL WILL BE PROVIDED BY THE USER AFTER DEPLOYMENT
 const API_URL = "https://script.google.com/macros/s/AKfycbwMr1zDSXijKHEF2gltuLOJTGAflMjQh90Z9tiwdARk3SfCCfg8ehTyhVa1vN5bTIzb/exec";
 
 export const Auth = {
     user: null,
+    idleTimer: null,
 
     init() {
         // Check local storage
@@ -14,7 +13,7 @@ export const Auth = {
         if (saved) {
             this.user = JSON.parse(saved);
 
-            // Retroactive Admin Fix: If name is Hjalmar, ensure isAdmin is true
+            // Retroactive Admin Fix
             if (this.user.name && this.user.name.includes("Hjalmar") && !this.user.isAdmin) {
                 this.user.isAdmin = true;
                 this.user.id = "SUPER_ADMIN";
@@ -22,6 +21,9 @@ export const Auth = {
             }
 
             this.hideOverlay();
+
+            // Check Maintenance on init (if session persisted)
+            this.verifyMaintenanceAccess();
         } else {
             this.showOverlay();
         }
@@ -45,6 +47,49 @@ export const Auth = {
         document.getElementById('form-forgot').onsubmit = (e) => this.handleForgot(e);
         document.getElementById('form-change-pass').onsubmit = (e) => this.handleChangePassword(e);
     },
+
+    // --- IDLE TIMER (15 Mins) ---
+    startIdleTimer() {
+        // Clear existing to be safe
+        this.stopIdleTimer();
+        // Start 15 minute countdown
+        this.idleTimer = setTimeout(() => {
+            console.warn("Session expired due to inactivity (15m)");
+            this.logout();
+            this.showError("Sesión cerrada por inactividad.");
+        }, 15 * 60 * 1000);
+    },
+
+    stopIdleTimer() {
+        if (this.idleTimer) {
+            clearTimeout(this.idleTimer);
+            this.idleTimer = null;
+        }
+    },
+    // ----------------------------
+
+    // NEW: Check Maintenance Logic after Login or on Init
+    async verifyMaintenanceAccess() {
+        const isMaint = await checkMaintenanceStatus();
+        if (isMaint) {
+            // If maintenance is ON
+            const isAdmin = this.user && (this.user.isAdmin === true || (this.user.name && this.user.name.toLowerCase().includes('hjalmar')));
+
+            if (!isAdmin) {
+                // Not Admin: Block Access.
+                // We do NOT hide overlay. Actually we DO hide Auth overlay because we want to show Maintenance Overlay?
+                // Maint Overlay is below Auth.
+                // If we hide Auth, user sees Maint. Correct.
+                // BUT we must Trigger the Maint Overlay visibility in App.
+                localStorage.setItem('MAINTENANCE_MODE', 'true');
+                window.dispatchEvent(new CustomEvent('storage', { key: 'MAINTENANCE_MODE' })); // trigger listeners
+                // Also dispatch custom auth event just in case
+            }
+        }
+        // Always dispatch auth-changed so app knows user is logged in (or not)
+        window.dispatchEvent(new CustomEvent('auth-changed', { detail: { user: this.user } }));
+    },
+
 
     toggleForms(view) {
         const login = document.getElementById('form-login');
@@ -220,7 +265,8 @@ export const Auth = {
         this.user = user;
         localStorage.setItem('georadio_user', JSON.stringify(user));
         this.hideOverlay();
-        window.dispatchEvent(new CustomEvent('auth-changed', { detail: { user } }));
+        // Check maintenance before letting them "in" fully (UI wise)
+        this.verifyMaintenanceAccess();
     },
 
     logout() {
