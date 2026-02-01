@@ -26,6 +26,9 @@ export const Auth = {
             this.verifyMaintenanceAccess();
         } else {
             this.showOverlay();
+            // Force hide maintenance so user can login
+            const maint = document.getElementById('maintenance-overlay');
+            if (maint) maint.classList.add('hidden');
         }
 
         this.bindEvents();
