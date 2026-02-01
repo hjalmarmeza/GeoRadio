@@ -72,21 +72,18 @@ const maint = {
                 // Admin allowed: Hide Overlay but show Indicator
                 this.overlay.classList.add('hidden');
                 this.showAdminIndicator(true);
+            } else if (!user) {
+                // User NOT logged in: Hide Maintenance Overlay so they can Login
+                this.overlay.classList.add('hidden');
+                this.showAdminIndicator(false);
             } else {
-                // Block everyone else
+                // User IS logged in but NOT Admin: Block Access
                 this.overlay.classList.remove('hidden');
                 this.showAdminIndicator(false);
 
                 // Ensure video plays
                 const vid = document.getElementById('maintenance-video');
                 if (vid && vid.paused) vid.play().catch(e => console.log(e));
-
-                // FORCE HIDE AUTH OVERLAY IF OPEN (Critical)
-                // If maintenance is on, we don't want people trying to login unless they use the backdoor
-                // But wait, if they need to login AS admin, they need the auth overlay?
-                // The overlay has a z-index higher than maintenance? 
-                // Let's check CSS. Maintenance is usually highest. 
-                // Actually, if Auth Overlay is open, it might be covering Maintenance Overlay.
             }
         } else {
             this.overlay.classList.add('hidden');
