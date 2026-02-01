@@ -140,22 +140,26 @@ function updateAdminUI() {
                 }
             };
 
-            // Update State Visually (Floating Icon Style)
+            // Update State Visually (Simple Icon Style)
             const isMaint = localStorage.getItem('MAINTENANCE_MODE') === 'true';
 
             if (isMaint) {
                 // Active (ON)
                 btn.innerHTML = '<span class="material-icons-round">warning</span>';
-                btn.className = 'btn-maint-floating active';
+                btn.style.color = '#ff0055'; // Red for Warning
                 btn.title = "DESACTIVAR MANTENIMIENTO";
             } else {
                 // Inactive (OFF)
                 btn.innerHTML = '<span class="material-icons-round">build</span>';
-                btn.className = 'btn-maint-floating';
+                btn.style.color = 'var(--accent)'; // Normal Accent
                 btn.title = "ACTIVAR MANTENIMIENTO";
             }
 
-            // Clean up old inline overrides
+            // Clean up visual overrides to ensure transparency
+            btn.className = 'btn-icon'; // Reset class to basic
+            btn.style.background = 'transparent';
+            btn.style.border = 'none';
+            btn.style.boxShadow = 'none';
             btn.style.marginTop = '';
             btn.style.order = '';
             btn.classList.remove('hidden'); // Ensure visible

@@ -149,16 +149,18 @@
         </div>
     </header>
 
-    <!-- Admin Maintenance Button (Fixed Position) -->
-    <button id="btn-maint-toggle" class="btn-maint-floating hidden" title="Modo Mantenimiento">
-        <span class="material-icons-round">build</span>
-    </button>
+    <!-- Admin Maintenance Button (Fixed Position) -> MOVED TO SIDEBAR -->
+    <!-- (Empty) -->
 
     <main class="content-wrapper">
         <!-- Drawer for Mobile / Sidebar for Desktop -->
         <aside class="filters-panel glass-panel active" id="filters-panel">
-            <div class="panel-header-row">
+            <div class="panel-header-row" style="display: flex; justify-content: space-between; align-items: center;">
                 <h2>Sintonizador</h2>
+                <button id="btn-maint-toggle" class="btn-icon hidden" title="Modo Mantenimiento"
+                    style="color: var(--accent);">
+                    <span class="material-icons-round">build</span>
+                </button>
             </div>
 
             <div class="control-group">
