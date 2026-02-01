@@ -140,34 +140,25 @@ function updateAdminUI() {
                 }
             };
 
-            // Force visual styles for maximum visibility
-            btn.style.display = 'flex';
-            btn.style.marginTop = '1.5rem';
-        }
+            // Update State Visually (Full Width Button Style)
+            const isMaint = localStorage.getItem('MAINTENANCE_MODE') === 'true';
 
-        // Update State Visually
-        const isMaint = localStorage.getItem('MAINTENANCE_MODE') === 'true';
-
-        if (btn) {
             if (isMaint) {
-                btn.classList.add('active');
-                btn.innerHTML = '<span class="material-icons-round">warning</span>';
+                // Active (ON)
+                btn.innerHTML = '<span class="material-icons-round">warning</span> MANTENIMIENTO: ON';
                 btn.style.color = '#ff0055';
-                btn.style.background = 'transparent';
-                btn.title = "DESACTIVAR MANTENIMIENTO";
-                btn.style.animation = "pulse 1.5s infinite";
+                btn.title = "DESACTIVAR";
+                btn.className = 'btn-ghost active'; // Use ghost style for sidebar
             } else {
-                btn.classList.remove('active');
-                btn.innerHTML = '<span class="material-icons-round">build</span>';
-                btn.style.color = 'var(--accent)';
-                btn.style.background = 'transparent';
-                btn.title = "ACTIVAR MANTENIMIENTO";
-                btn.style.animation = "none";
+                // Inactive (OFF)
+                btn.innerHTML = '<span class="material-icons-round">build</span> MANTENIMIENTO: OFF';
+                btn.style.color = 'var(--text-muted)';
+                btn.title = "ACTIVAR";
+                btn.className = 'btn-ghost';
             }
-
-            // Re-enforce visibility (Icon style)
-            btn.style.display = 'inline-flex';
-            btn.style.marginTop = '0';
+            // Reset inline styles that might conflict
+            btn.style.order = "99"; // Ensure it's at bottom if flex
+            btn.style.marginTop = "1rem";
         }
 
     } else {

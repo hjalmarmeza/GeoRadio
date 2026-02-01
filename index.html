@@ -139,16 +139,9 @@
             <div class="status-indicator">
                 <span class="pulse"></span> LIVE
             </div>
-            <!-- Admin Maintenance Icon (Header) -->
-            <button id="btn-maint-toggle" class="btn-icon hidden" title="Modo Mantenimiento"
-                style="color: var(--accent);">
-                <span class="material-icons-round">build</span>
-            </button>
+            <!-- Admin Maintenance (Moved to Sidebar) -->
             <button id="btn-theme-toggle" class="btn-icon" title="Cambiar Tema">
                 <span class="material-icons-round">palette</span>
-            </button>
-            <button id="btn-logout" class="btn-icon" title="Cerrar Sesión">
-                <span class="material-icons-round">logout</span>
             </button>
         </div>
     </header>
@@ -205,6 +198,14 @@
 
             <button class="btn-ghost" id="btn-view-recents">
                 <span class="material-icons-round">history</span> Recientes
+            </button>
+
+            <!-- Moved Nav Items -->
+            <button class="btn-ghost" id="btn-logout">
+                <span class="material-icons-round">logout</span> Cerrar Sesión
+            </button>
+            <button id="btn-maint-toggle" class="btn-ghost hidden" style="display: none;"> <!-- Hidden via JS logic -->
+                <span class="material-icons-round">build</span> Mantenimiento
             </button>
 
             <div class="decor-line"></div>
