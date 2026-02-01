@@ -66,17 +66,26 @@
     max-width: 600px;
 }
 
-.btn-secret {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 30px;
-    height: 30px;
-    background: transparent;
-    border: none;
-    color: rgba(255, 255, 255, 0.05);
-    cursor: default;
-    /* Don't show hand cursor */
+.btn-maintenance-login {
+    margin-top: 2rem;
+    padding: 0.8rem 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-maintenance-login:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 0 15px var(--primary);
+    transform: translateY(-2px);
 }
 
 @keyframes glowText {
