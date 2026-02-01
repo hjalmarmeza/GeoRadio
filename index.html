@@ -149,6 +149,11 @@
         </div>
     </header>
 
+    <!-- Admin Maintenance Button (Fixed Position) -->
+    <button id="btn-maint-toggle" class="btn-maint-floating hidden" title="Modo Mantenimiento">
+        <span class="material-icons-round">build</span>
+    </button>
+
     <main class="content-wrapper">
         <!-- Drawer for Mobile / Sidebar for Desktop -->
         <aside class="filters-panel glass-panel active" id="filters-panel">
@@ -204,9 +209,7 @@
             </button>
 
             <!-- Moved Nav Items -->
-            <button id="btn-maint-toggle" class="btn-ghost hidden" style="display: none;"> <!-- Hidden via JS logic -->
-                <span class="material-icons-round">build</span> Mantenimiento
-            </button>
+            <div class="decor-line"></div>
 
             <div class="decor-line"></div>
         </aside>

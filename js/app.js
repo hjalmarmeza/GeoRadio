@@ -140,31 +140,32 @@ function updateAdminUI() {
                 }
             };
 
-            // Update State Visually (Full Width Button Style)
+            // Update State Visually (Floating Icon Style)
             const isMaint = localStorage.getItem('MAINTENANCE_MODE') === 'true';
 
             if (isMaint) {
                 // Active (ON)
-                btn.innerHTML = '<span class="material-icons-round">warning</span> MANTENIMIENTO: ON';
-                btn.style.color = '#ff0055';
-                btn.title = "DESACTIVAR";
-                btn.className = 'btn-ghost active'; // Use ghost style for sidebar
+                btn.innerHTML = '<span class="material-icons-round">warning</span>';
+                btn.className = 'btn-maint-floating active';
+                btn.title = "DESACTIVAR MANTENIMIENTO";
             } else {
                 // Inactive (OFF)
-                btn.innerHTML = '<span class="material-icons-round">build</span> MANTENIMIENTO: OFF';
-                btn.style.color = 'var(--text-muted)';
-                btn.title = "ACTIVAR";
-                btn.className = 'btn-ghost';
+                btn.innerHTML = '<span class="material-icons-round">build</span>';
+                btn.className = 'btn-maint-floating';
+                btn.title = "ACTIVAR MANTENIMIENTO";
             }
-            // Reset inline styles that might conflict
-            btn.style.order = "99"; // Ensure it's at bottom if flex
-            btn.style.marginTop = "1rem";
+
+            // Clean up old inline overrides
+            btn.style.marginTop = '';
+            btn.style.order = '';
+            btn.classList.remove('hidden'); // Ensure visible
         }
 
     } else {
         if (btn) btn.classList.add('hidden'); // Hide if not admin
     }
 }
+
 
 
 // --- State ---

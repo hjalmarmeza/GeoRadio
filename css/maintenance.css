@@ -88,6 +88,43 @@
     transform: translateY(-2px);
 }
 
+.btn-maint-floating {
+    position: fixed;
+    top: 70px;
+    /* Below Header (approx 60px) */
+    right: 15px;
+    /* Aligned with right padding */
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    /* Above map */
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-maint-floating:hover {
+    transform: scale(1.1);
+    background: var(--accent);
+    color: #fff;
+}
+
+.btn-maint-floating.active {
+    background: #ff0055;
+    border-color: #ff0055;
+    color: #fff;
+    box-shadow: 0 0 15px #ff0055;
+    animation: pulse 2s infinite;
+}
+
 @keyframes glowText {
     from {
         text-shadow: 0 0 10px var(--primary);
