@@ -25,6 +25,7 @@ export class RadioPlayer {
         this.audio.addEventListener('playing', () => {
             this.isPlaying = true;
             if (this.onPlay) this.onPlay();
+            if (this.canvas && !this.animationId) this._animateVisualizer();
         });
 
         this.audio.addEventListener('pause', () => {
@@ -91,26 +92,14 @@ export class RadioPlayer {
 
     _animateVisualizer() {
         const draw = () => {
+            if (!this.isPlaying) {
+                this.animationId = null;
+                return;
+            }
+
             this.animationId = requestAnimationFrame(draw);
 
             if (!this.ctx || !this.canvas) return;
-
-            const w = this.canvas.width = this.canvas.offsetWidth;
-            const h = this.canvas.height = this.canvas.offsetHeight;
-            const ctx = this.ctx;
-
-            ctx.clearRect(0, 0, w, h);
-
-            if (!this.isPlaying) {
-                // Flat quiet line
-                ctx.beginPath();
-                ctx.moveTo(0, h / 2);
-                ctx.lineTo(w, h / 2);
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-                ctx.lineWidth = 1;
-                ctx.stroke();
-                return;
-            }
 
             // --- Premium Sound Mesh / Ribbon Visualizer ---
             const time = Date.now() / 1000;

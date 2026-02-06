@@ -27,23 +27,9 @@ const maint = {
             }
         });
 
-        // 1. LOCAL POLLING (Fast, 2s) for multi-tab sync
-        setInterval(() => this.check(), 2000);
-
-        // 2. REMOTE POLLING (Slow, 60s) for global sync
-        // As requested by user: Check every 1 minute
-        setInterval(async () => {
-            const isGlobalMaintenance = await API.checkMaintenanceStatus();
-            // Only update if different from local to avoid spam
-            const currentLocal = localStorage.getItem('MAINTENANCE_MODE') === 'true';
-
-            if (isGlobalMaintenance !== currentLocal) {
-                console.log("Global maintenance state changed:", isGlobalMaintenance);
-                localStorage.setItem('MAINTENANCE_MODE', isGlobalMaintenance);
-                this.check();
-                updateAdminUI(); // Update button state if user is admin
-            }
-        }, 60000); // 1 minute
+        // 1. LOCAL POLLING REMOVED to save battery
+        // 2. REMOTE POLLING REMOVED to save battery
+        // Maintenance is now checked on init() and before starting any playback.
 
         // Listen for Auth changes
         window.addEventListener('auth-changed', () => {
