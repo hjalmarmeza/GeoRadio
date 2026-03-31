@@ -14,7 +14,7 @@ async function fetchWithFallback(endpoint) {
         try {
             const url = `${server}${endpoint}`;
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 4000); // 4s timeout per server
+            const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout per server (more robust for complex searches)
 
             const response = await fetch(url, { signal: controller.signal });
             clearTimeout(timeoutId);
@@ -38,8 +38,9 @@ export async function getCountries() {
 export async function getCities(countryName) {
     if (!countryName) return [];
 
-    // Fetch stations to extract cities (Radio-Browser doesn't have a clean cities endpoint by country)
-    const stations = await fetchWithFallback(`/stations/search?country=${encodeURIComponent(countryName)}&hidebroken=true&limit=400`);
+    // Fetch stations to extract cities/states (Radio-Browser doesn't have a clean cities endpoint by country)
+    // Expanded limit to 1000 to catch more cities in larger countries (like Spain/USA)
+    const stations = await fetchWithFallback(`/stations/search?country=${encodeURIComponent(countryName)}&hidebroken=true&order=clickcount&reverse=true&limit=1000`);
 
     if (!stations || !Array.isArray(stations)) return [];
 
@@ -148,6 +149,8 @@ export async function getTopCountryStations(countryName, limit = 10) {
 export async function getStations(countryName, cityName, limit = 100) {
     let endpoint = `/stations/search?country=${encodeURIComponent(countryName)}&hidebroken=true&order=clickcount&reverse=true&limit=${limit}`;
     if (cityName) {
+        // Many stations have city in 'state' field and 'city' undefined.
+        // We'll search by both and the API handles it gracefully if redundant.
         endpoint += `&city=${encodeURIComponent(cityName)}`;
     }
     const data = await fetchWithFallback(endpoint);
@@ -166,19 +169,28 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMr1zDSXijKH
 
 export async function checkMaintenanceStatus() {
     try {
-        const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=check_status&t=${Date.now()}`);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s safety timeout for Google Script
+        const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=check_status&t=${Date.now()}`, { signal: controller.signal });
+        clearTimeout(timeoutId);
         const data = await res.json();
         return data.maintenance === true;
     } catch (e) {
-        console.warn("Maint check fail:", e);
-        return false; // Fail open (assume works) or closed? Open is safer for user experience if server down.
+        console.warn("Maintenance check fail:", e);
+        return false; // Fail open
     }
 }
 
 export async function setMaintenanceStatus(isAdminMode) {
     try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
         const val = isAdminMode ? "TRUE" : "FALSE";
-        await fetch(`${GOOGLE_SCRIPT_URL}?action=set_maintenance&value=${val}`, { method: 'POST' });
+        await fetch(`${GOOGLE_SCRIPT_URL}?action=set_maintenance&value=${val}`, { 
+            method: 'POST',
+            signal: controller.signal 
+        });
+        clearTimeout(timeoutId);
         return true;
     } catch (e) {
         console.error("Maint set fail:", e);
