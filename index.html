@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>GeoRadio | Future FM</title>
     <meta name="description" content="Explora radios FM locales de todo el mundo con una interfaz futurista.">
     <meta name="theme-color" content="#050510">
@@ -17,21 +17,17 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;700;900&display=swap"
         rel="stylesheet">
-    <!-- ... (skipping unchanged lines) ... -->
-
-
-
 
     <!-- Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="css/style.css?v=v3-fire">
+    <link rel="stylesheet" href="css/style.css?v=v3-fire-force">
 
     <!-- Leaflet (Maps) -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css?v=1769646047"
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js?v=1769646047"
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </head>
 
@@ -48,148 +44,123 @@
         <div class="maintenance-content">
             <div class="maintenance-message">
                 <h2>EN MANTENIMIENTO</h2>
-                <p>Estamos recargando las frecuencias. Volvemos en breve.</p>
+                <p>Nuestros ingenieros están trabajando para mejorar la señal satelital.</p>
+                <div class="maint-spinner"></div>
             </div>
-            <!-- Visible Admin/Login Trigger -->
-            <button id="btn-admin-bypass" class="btn-maintenance-login">Iniciar Sesión / Admin</button>
+            <button id="btn-admin-bypass" class="btn-ghost">Acceso Técnico</button>
         </div>
     </div>
 
-    <!-- Auth Overlay (Starts visible if not logged in) -->
-    <div id="auth-overlay" class="auth-overlay hidden">
-        <div class="auth-box glass-panel">
+    <!-- Auth Overlay -->
+    <div id="auth-overlay" class="auth-overlay">
+        <div class="auth-card glass-panel">
             <div class="auth-header">
-                <span class="material-icons-round logo-icon">radio</span>
-                <h2>GEO<span class="highlight">RADIO</span></h2>
-                <p>Tu pasaporte musical global</p>
+                <div class="logo">
+                    <span class="material-icons-round logo-icon">radio</span>
+                    <h1>GEORADIO<span class="highlight">.</span></h1>
+                </div>
             </div>
 
             <!-- Login Form -->
-            <form id="form-login" class="auth-form" novalidate>
-                <div class="control-group">
-                    <label>EMAIL O USUARIO</label>
-                    <input type="text" id="login-email" class="glass-input" placeholder="usuario@ejemplo.com" required>
+            <form id="form-login" class="auth-form">
+                <h2>Identificación Requerida</h2>
+                <div class="input-group">
+                    <label>Email del Sistema</label>
+                    <input type="email" id="login-email" required placeholder="admin@georadio.com">
                 </div>
-                <div class="control-group">
-                    <label>CONTRASEÑA</label>
-                    <input type="password" id="login-pass" class="glass-input" placeholder="••••••••" required>
+                <div class="input-group">
+                    <label>Código de Acceso</label>
+                    <input type="password" id="login-pass" required placeholder="••••••••">
                 </div>
-                <button type="submit" class="btn-primary">ENTRAR</button>
-                <div class="auth-links">
-                    <a href="#" id="link-register">Crear cuenta nueva</a>
-                    <a href="#" id="link-forgot">¿Olvidaste tu contraseña?</a>
+                <button type="submit" class="btn-primary">INICIAR SESIÓN</button>
+                <div class="auth-footer">
+                    <a href="#" id="link-register">Crear Nueva Cuenta</a>
+                    <a href="#" id="link-forgot">¿Olvidaste el código?</a>
                 </div>
             </form>
 
             <!-- Register Form -->
             <form id="form-register" class="auth-form hidden">
-                <div class="control-group">
-                    <label>NOMBRE</label>
-                    <input type="text" id="reg-name" class="glass-input" placeholder="Tu nombre" required>
+                <h2>Nueva Cuenta</h2>
+                <div class="input-group">
+                    <label>Nombre de Usuario</label>
+                    <input type="text" id="reg-name" required placeholder="Explorador">
                 </div>
-                <div class="control-group">
-                    <label>EMAIL</label>
-                    <input type="email" id="reg-email" class="glass-input" placeholder="usuario@ejemplo.com" required>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="reg-email" required placeholder="email@ejemplo.com">
                 </div>
-                <div class="control-group">
-                    <label>CONTRASEÑA</label>
-                    <input type="password" id="reg-pass" class="glass-input" placeholder="Crear contraseña" required>
+                <div class="input-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="reg-pass" required placeholder="Mínimo 6 caracteres">
                 </div>
                 <button type="submit" class="btn-primary">REGISTRARSE</button>
-                <div class="auth-links">
+                <div class="auth-footer">
                     <a href="#" id="link-login">Ya tengo cuenta</a>
                 </div>
             </form>
 
+            <!-- Forgot Pass -->
             <form id="form-forgot" class="auth-form hidden">
-                <p class="auth-desc">Ingresa tu email y te enviaremos una nueva contraseña provisional.</p>
-                <div class="control-group">
-                    <label>EMAIL</label>
-                    <input type="email" id="forgot-email" class="glass-input" placeholder="usuario@ejemplo.com"
-                        required>
+                <h2>Recuperar Acceso</h2>
+                <p>Se enviará un código temporal a tu email.</p>
+                <div class="input-group">
+                    <label>Tu Email</label>
+                    <input type="email" id="forgot-email" required placeholder="email@ejemplo.com">
                 </div>
-                <button type="submit" class="btn-primary">RECUPERAR</button>
-                <div class="auth-links">
-                    <a href="#" id="link-back-login">Volver al login</a>
+                <button type="submit" class="btn-primary">ENVIAR CÓDIGO</button>
+                <div class="auth-footer">
+                    <a href="#" id="link-back-login">Volver al inicio</a>
                 </div>
             </form>
-
-            <!-- Change Password Form (Forced) -->
-            <form id="form-change-pass" class="auth-form hidden">
-                <div class="auth-message" style="margin-bottom: 1rem;">⚠️ Paso de Seguridad</div>
-                <p class="auth-desc">Estás usando una contraseña temporal. Por favor crea una nueva para continuar.</p>
-                <div class="control-group">
-                    <label>NUEVA CONTRASEÑA</label>
-                    <input type="password" id="new-pass-input" class="glass-input" placeholder="Mínimo 6 caracteres"
-                        required minlength="6">
-                </div>
-                <button type="submit" class="btn-primary">GUARDAR Y ENTRAR</button>
-            </form>
-
-            <div id="auth-message" class="auth-message hidden"></div>
         </div>
     </div>
 
+    <!-- Main Content Wrapper -->
     <header class="main-header">
         <div class="logo">
             <span class="material-icons-round logo-icon">radio</span>
-            <h1>GEO<span class="highlight">RADIO</span></h1>
+            <h1>GEORADIO<span class="highlight">.</span></h1>
         </div>
-        <div class="header-controls">
-            <div class="status-indicator">
-                <span class="pulse"></span> LIVE
-            </div>
-            <!-- Admin Maintenance (Moved to Sidebar) -->
-            <button id="btn-theme-toggle" class="btn-icon" title="Cambiar Tema">
-                <span class="material-icons-round">palette</span>
+        <div class="header-actions">
+           <button class="btn-icon" id="btn-theme-toggle">
+                <span class="material-icons-round">dark_mode</span>
             </button>
-            <button id="btn-logout" class="btn-icon" title="Cerrar Sesión">
+            <div class="status-indicator">
+                <div class="pulse"></div>
+                <span>LIVE</span>
+            </div>
+            <button class="btn-icon" id="btn-logout" title="Cerrar Sesión">
                 <span class="material-icons-round">logout</span>
             </button>
         </div>
     </header>
 
-    <!-- Admin Maintenance Button (Fixed Position) -> MOVED TO SIDEBAR -->
-    <!-- (Empty) -->
-
-    <main class="content-wrapper">
-        <!-- Drawer for Mobile / Sidebar for Desktop -->
-        <aside class="filters-panel glass-panel active" id="filters-panel">
-            <div class="panel-header-row" style="display: flex; justify-content: space-between; align-items: center;">
-                <h2>Sintonizador</h2>
-                <button id="btn-maint-toggle" class="btn-icon hidden" title="Modo Mantenimiento"
-                    style="color: var(--accent);">
-                    <span class="material-icons-round">build</span>
+    <div class="content-wrapper">
+        <!-- Sidebar Filters -->
+        <aside class="filters-panel glass-panel" id="sidebar-filters">
+            <div class="panel-header-row">
+                <h2>Sintonización</h2>
+                <button class="btn-icon btn-close-mobile" id="btn-close-filters">
+                    <span class="material-icons-round">close</span>
                 </button>
             </div>
-
+            
             <div class="control-group">
-                <div class="label-row">
-                    <label for="country-select">PAÍS</label>
-                    <button id="btn-fav-country" class="btn-icon-small hidden" title="Añadir a favoritos">
-                        <span class="material-icons-round">star_border</span>
-                    </button>
-                </div>
+                <label>PAÍS / REGIÓN</label>
                 <div class="custom-select-wrapper">
                     <select id="country-select" class="glass-input">
-                        <option value="" disabled selected>Selecciona ubicación...</option>
-                        <!-- Populated by JS -->
+                        <option value="">Cargando países...</option>
                     </select>
                     <span class="material-icons-round chevron">expand_more</span>
                 </div>
             </div>
 
             <div class="control-group disabled" id="city-group">
-                <div class="label-row">
-                    <label for="city-select">CIUDAD</label>
-                    <button id="btn-fav-city" class="btn-icon-small hidden" title="Añadir a favoritos">
-                        <span class="material-icons-round">star_border</span>
-                    </button>
-                </div>
+                <label>CIUDAD / ÁREA</label>
                 <div class="custom-select-wrapper">
-                    <select id="city-select" class="glass-input" disabled>
-                        <option value="" disabled selected>Esperando país...</option>
-                        <!-- Populated by JS -->
+                    <select id="city-select" class="glass-input">
+                        <option value="">Selecciona país primero</option>
                     </select>
                     <span class="material-icons-round chevron">expand_more</span>
                 </div>
@@ -199,232 +170,182 @@
 
             <div class="stats-mini">
                 <div class="stat">
-                    <span class="stat-val" id="total-stations">0</span>
-                    <span class="stat-label">EMISORAS</span>
+                    <span class="stat-val" id="count-stations">0</span>
+                    <span class="stat-label">FRECUENCIAS</span>
                 </div>
             </div>
 
-            <div class="decor-line"></div>
-
-            <button class="btn-ghost" id="btn-view-recents">
-                <span class="material-icons-round">history</span> Recientes
+            <button class="btn-ghost" id="btn-favorites">
+                <span class="material-icons-round">favorite</span>
+                MIS FAVORITOS
             </button>
 
-            <!-- Moved Nav Items -->
-            <div class="decor-line"></div>
-
-            <div class="decor-line"></div>
+            <!-- Admin Tools (Hidden by default) -->
+            <div id="admin-tools" class="admin-tools hidden">
+                <div class="decor-line"></div>
+                <label style="color: var(--secondary); font-weight: 700;">CONTROLES TÉCNICOS</label>
+                <button class="btn-ghost" id="btn-toggle-maint" style="border-color: var(--secondary); color: var(--secondary);">
+                    <span class="material-icons-round">router</span>
+                    ALTERNAR MANTENIMIENTO
+                </button>
+            </div>
         </aside>
 
-        <section class="stations-grid-container" id="stations-container">
+        <!-- Main Grid Area -->
+        <main class="stations-grid-container">
             <div class="grid-header">
-                <h2 id="grid-title">Explora el mundo</h2>
-                <div class="search-wrap disabled">
+                <h2 id="grid-title">Estaciones <span class="highlight">Populares</span></h2>
+                <div class="search-wrap">
                     <span class="material-icons-round">search</span>
-                    <input type="text" id="station-search" placeholder="Buscar emisora..." class="glass-input" disabled>
+                    <input type="text" id="station-search" class="glass-input" placeholder="Buscar por nombre...">
                 </div>
             </div>
 
-            <!-- TABS CONTENT: EXPLORE -->
-            <div id="view-explore">
-                <div id="stations-grid" class="stations-grid">
-                    <div class="empty-state">
-                        <span class="material-icons-round">public</span>
-                        <p>Selecciona un país para comenzar la transmisión.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TABS CONTENT: TRENDS -->
-            <div id="view-trends" class="hidden">
-                <div id="trends-grid" class="stations-grid">
-                    <!-- Populated by JS -->
-                </div>
-            </div>
-
-            <!-- TABS CONTENT: FAVORITES (Hidden initially) -->
-            <div id="view-favorites" class="hidden">
-                <div id="favorites-grid" class="stations-grid">
-                    <!-- Populated by JS -->
-                </div>
-            </div>
-
-            <!-- TABS CONTENT: RECENTS (Hidden) -->
-            <div id="view-history" class="hidden">
-                <div id="history-grid" class="stations-grid">
-                    <!-- Populated by JS -->
-                </div>
-            </div>
-
-            <div id="loader" class="loader hidden">
+            <div id="stations-loader" class="loader hidden">
                 <div class="spinner"></div>
             </div>
-        </section>
-    </main>
 
-    <footer class="player-bar glass-panel">
+            <div class="stations-grid" id="stations-grid">
+                <!-- Cards inject via JS -->
+            </div>
+
+            <div id="empty-state" class="empty-state hidden">
+                <span class="material-icons-round">sensors_off</span>
+                <p>No se encontraron señales en esta zona.</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Map View Overlay (Hidden by default) -->
+    <div id="map-view" class="map-view hidden">
+        <div class="map-header">
+            <button class="btn-icon" id="btn-close-map">
+                <span class="material-icons-round">arrow_back</span>
+            </button>
+            <h2>Explorador <span class="highlight">Geográfico</span></h2>
+        </div>
+        <div class="map-view-container">
+            <div id="geo-map"></div>
+        </div>
+    </div>
+
+    <!-- Player Bar -->
+    <footer class="player-bar">
         <canvas id="visualizer-canvas"></canvas>
+        
         <div class="now-playing">
-            <div class="station-logo-placeholder" id="player-logo">
-                <span class="material-icons-round">music_note</span>
+            <div class="station-logo-placeholder" id="player-logo-wrap">
+                <span class="material-icons-round">radio</span>
             </div>
             <div class="track-info">
-                <h3 id="player-station-name">Sin señal</h3>
-                <p id="player-status">Esperando selección...</p>
+                <h3 id="player-station-name">GeoRadio Future</h3>
+                <p id="player-status">Selecciona una estación</p>
             </div>
         </div>
 
         <div class="player-controls">
-            <!-- Sleep Timer Button -->
-            <button class="btn-icon" id="btn-sleep">
-                <span class="material-icons-round">bedtime</span>
-            </button>
-
-            <!-- EQ Button -->
-            <button class="btn-icon" id="btn-eq">
-                <span class="material-icons-round">graphic_eq</span>
-            </button>
-
-            <!-- WhatsApp Button (Dynamic) -->
-            <button class="btn-icon hidden" id="btn-player-whatsapp" style="color: #25D366;">
-                <span class="material-icons-round">chat</span>
-            </button>
-
-            <button class="btn-icon" id="btn-prev" disabled>
+            <button class="btn-icon" id="btn-prev">
                 <span class="material-icons-round">skip_previous</span>
             </button>
-            <button class="btn-play-large" id="btn-play-toggle" disabled>
-                <span class="material-icons-roundplay_arrow" id="play-icon">play_arrow</span>
+            <button class="btn-play-large" id="btn-play-pause">
+                <span class="material-icons-round">play_arrow</span>
             </button>
-            <button class="btn-icon" id="btn-next" disabled>
+            <button class="btn-icon" id="btn-next">
                 <span class="material-icons-round">skip_next</span>
             </button>
-            <button id="btn-zen-mode" class="btn-icon" title="Modo Zen">
-                <span class="material-icons-round">fullscreen</span>
+            <!-- Zen Mode / Fullscreen Button -->
+            <button class="btn-icon" id="btn-zen-mode" title="Modo Inmersivo">
+                <span class="material-icons-round">fit_screen</span>
             </button>
         </div>
 
-        <div class="volume-control">
-            <span class="material-icons-round">volume_up</span>
-            <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.8">
+        <div class="player-extra-controls">
+            <div class="volume-control">
+                <span class="material-icons-round" id="volume-icon">volume_up</span>
+                <input type="range" id="volume-slider" min="0" max="100" value="80">
+            </div>
+            <button class="btn-icon" id="btn-sleep-timer" title="Temporizador">
+                <span class="material-icons-round">timer</span>
+            </button>
+            <button class="btn-icon" id="btn-equalizer" title="Ecualizador">
+                <span class="material-icons-round">graphic_eq</span>
+            </button>
         </div>
     </footer>
 
-    <!-- Mobile Bottom Navigation -->
+    <!-- Mobile Nav -->
     <nav class="mobile-nav">
-        <button class="nav-item active" id="nav-explore">
+        <button class="nav-item active" data-view="explore">
             <span class="material-icons-round">explore</span>
             <span>Explorar</span>
         </button>
-        <button class="nav-item" id="nav-filter-toggle">
+        <button class="nav-item" data-view="favorites">
+            <span class="material-icons-round">favorite</span>
+            <span>Favoritos</span>
+        </button>
+        <button class="nav-item" id="btn-mobile-map">
+            <span class="material-icons-round">map</span>
+            <span>Mapa</span>
+        </button>
+        <button class="nav-item" id="btn-mobile-filters">
             <span class="material-icons-round">tune</span>
             <span>Filtros</span>
         </button>
-        <!-- Trends moved to desktop/extended or just fit 5 items -->
-        <button class="nav-item" id="nav-trends">
-            <span class="material-icons-round">local_fire_department</span>
-            <span>Top</span>
-        </button>
-        <button class="nav-item" id="nav-favorites">
-            <span class="material-icons-round">favorite</span>
-            <span>Favs</span>
-        </button>
-        <!-- Recents could be accessed via Favorites view toggler in future, but let's stick to 5 items max for mobile dock. 
-             Maybe add Recents to "Filters" drawer or "Favorites" view. 
-             User asked for Recents feature. Let's put Recents access in Drawer or separate.
-             Let's keep 5 items. Filter toggle is essential.
-             I will add "Recents" to the Filters panel for simplicity or replace one item. 
-             Let's replace "Favorites" with "Library" that has tabs? 
-             No, keep it simple. I'll add Recents into the Filters Drawer as a link. -->
     </nav>
 
-    <!-- Timer Modal -->
-    <div id="timer-modal" class="modal-overlay hidden">
-        <div class="modal glass-panel">
-            <h3>Temporizador</h3>
-            <div class="timer-options">
-                <button class="btn-timer" data-time="15">15 min</button>
-                <button class="btn-timer" data-time="30">30 min</button>
-                <button class="btn-timer" data-time="60">60 min</button>
-                <button class="btn-timer" data-time="0">Cancelar</button>
+    <!-- Modals -->
+    <div id="modal-sleep" class="modal hidden">
+        <div class="modal-content glass-panel">
+            <h2>Temporizador</h2>
+            <div class="sleep-options">
+                <button class="btn-sleep" data-min="15">15m</button>
+                <button class="btn-sleep" data-min="30">30m</button>
+                <button class="btn-sleep" data-min="60">60m</button>
+                <button class="btn-sleep" data-min="0" id="btn-sleep-off">OFF</button>
             </div>
-            <button class="btn-close-modal" id="btn-close-timer">Cerrar</button>
+            <button class="btn-close-modal" id="btn-close-sleep">Cerrar</button>
         </div>
     </div>
 
     <!-- Equalizer Modal -->
-    <div id="eq-modal" class="modal-overlay hidden">
-        <div class="modal glass-panel eq-modal-content">
-            <h3>Ecualizador</h3>
-            <div class="eq-sliders">
-                <div class="eq-band">
-                    <input type="range" min="-12" max="12" value="0" data-freq="60" orient="vertical">
-                    <span>60Hz</span>
-                </div>
-                <div class="eq-band">
-                    <input type="range" min="-12" max="12" value="0" data-freq="170" orient="vertical">
-                    <span>170Hz</span>
-                </div>
-                <div class="eq-band">
-                    <input type="range" min="-12" max="12" value="0" data-freq="310" orient="vertical">
-                    <span>310Hz</span>
-                </div>
-                <div class="eq-band">
-                    <input type="range" min="-12" max="12" value="0" data-freq="600" orient="vertical">
-                    <span>600Hz</span>
-                </div>
-                <div class="eq-band">
-                    <input type="range" min="-12" max="12" value="0" data-freq="1000" orient="vertical">
-                    <span>1KHz</span>
-                </div>
-                <div class="eq-band">
-                    <input type="range" min="-12" max="12" value="0" data-freq="3000" orient="vertical">
-                    <span>3KHz</span>
-                </div>
-                <div class="eq-band">
-                    <input type="range" min="-12" max="12" value="0" data-freq="6000" orient="vertical">
-                    <span>6KHz</span>
-                </div>
-                <div class="eq-band">
-                    <input type="range" min="-12" max="12" value="0" data-freq="12000" orient="vertical">
-                    <span>12KHz</span>
-                </div>
-                <div class="eq-band">
-                    <input type="range" min="-12" max="12" value="0" data-freq="14000" orient="vertical">
-                    <span>14KHz</span>
-                </div>
-                <div class="eq-band">
-                    <input type="range" min="-12" max="12" value="0" data-freq="16000" orient="vertical">
-                    <span>16KHz</span>
-                </div>
-            </div>
-            <div class="eq-presets">
-                <button class="btn-preset" data-preset="flat">Flat</button>
-                <button class="btn-preset" data-preset="rock">Rock</button>
-                <button class="btn-preset" data-preset="pop">Pop</button>
-                <button class="btn-preset" data-preset="jazz">Jazz</button>
-                <button class="btn-preset" data-preset="classical">Clásica</button>
+    <div id="modal-eq" class="modal hidden">
+        <div class="modal-content glass-panel">
+            <h2>Procesador de Audio</h2>
+            <div class="eq-controls">
+               <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">El ecualizador inteligente se ajusta automáticamente según el género de la estación.</p>
             </div>
             <button class="btn-close-modal" id="btn-close-eq">Cerrar</button>
         </div>
     </div>
 
     <!-- Scripts -->
-    <script type="module" src="js/app.js?v=1769646047"></script>
+    <script type="module" src="js/app.js?v=v3-fire-force"></script>
     <script>
+        // --- FORCE REFRESH SERVICE WORKER MECHANISM ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
                     .then(reg => {
+                        console.log('SW Registered', reg);
                         reg.onupdatefound = () => {
                             const newWorker = reg.installing;
                             newWorker.onstatechange = () => {
                                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('New version detected! Forcing refresh...');
                                     window.location.reload();
                                 }
                             };
                         };
                     });
+            });
+
+            // Handle controller change
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    window.location.reload();
+                    refreshing = true;
+                }
             });
         }
     </script>
