@@ -1368,40 +1368,91 @@ body {
 @media (max-width: 768px) {
     .content-wrapper {
         width: 100%;
+        height: auto;
+        flex-direction: column;
+        padding: 1rem;
         overflow-x: hidden;
+        padding-bottom: 200px; /* Space for player + fixed nav */
     }
 
     .filters-panel {
         width: 100%;
         max-width: 100vw;
-        box-sizing: border-box;
+        height: auto;
+        display: none; /* Hidden by default in mobile */
+        border-right: none;
+        border-bottom: 1px solid var(--glass-border);
+        margin-bottom: 1rem;
+    }
+
+    .filters-panel.active {
+        display: flex !important;
+        animation: slideInDown 0.3s var(--ease);
+    }
+
+    .stations-grid-container {
+        width: 100%;
+        padding: 0;
     }
 
     /* Force Zen Button Visibility in Player Bar */
     .player-controls {
         display: flex;
         align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        position: static;
+        transform: none;
     }
 
     #btn-zen-mode {
         display: flex !important;
-        width: 32px;
-        height: 32px;
-        background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Ensure player doesn't hide content */
+    .player-bar {
+        height: 70px;
+        padding: 0 1rem;
+        bottom: 60px; /* Above mobile nav */
+    }
+
+    .now-playing {
+        width: 150px;
+    }
+
+    .now-playing h3 {
+        font-size: 0.9rem;
+    }
+
+    .volume-control {
+        display: none; /* Hide volume on tiny mobile to save space */
+    }
+
+    .mobile-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        background: rgba(5, 5, 20, 0.98);
+        backdrop-filter: blur(20px);
+        border-top: 1px solid var(--glass-border);
+        z-index: 1000;
+        justify-content: space-around;
         align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        margin-left: 8px;
+        padding-bottom: env(safe-area-inset-bottom);
     }
+}
 
-    #btn-zen-mode .material-icons-round {
-        font-size: 1.2rem;
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
     }
-
-    /* Fix Theme Toggle position in panel */
-    .panel-header-row {
-        margin-bottom: 1rem;
-        padding-right: 5px;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 

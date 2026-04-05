@@ -225,7 +225,8 @@ const el = {
     visualizerCanvas: document.getElementById('visualizer-canvas'),
     btnEq: document.getElementById('btn-eq'), // Restored ID
     eqModal: document.getElementById('modal-eq'),
-    btnCloseEq: document.getElementById('btn-close-eq')
+    btnCloseEq: document.getElementById('btn-close-eq'),
+    btnCloseFilters: document.getElementById('btn-close-filters')
 };
 
 // --- Player Instance ---
@@ -340,6 +341,7 @@ function setupEventListeners() {
     if (el.navFavorites) el.navFavorites.addEventListener('click', () => switchView('favorites'));
     if (el.navTrends) el.navTrends.addEventListener('click', () => switchView('trends'));
     if (el.navFilterToggle) el.navFilterToggle.addEventListener('click', () => toggleFilters());
+    if (el.btnCloseFilters) el.btnCloseFilters.addEventListener('click', () => toggleFilters(false));
 
     // Fav Country Click
     if (el.btnFavCountry) {
@@ -578,7 +580,13 @@ function switchView(viewName) {
         loadRecents();
     }
 
-    toggleFilters(false);
+    // In mobile, show filters by default if no country selected
+    const isMobile = window.innerWidth <= 768;
+    if (viewName === 'explore' && isMobile && !state.selectedCountry) {
+        toggleFilters(true);
+    } else {
+        toggleFilters(false);
+    }
 }
 
 function loadFavorites() {
@@ -594,17 +602,28 @@ function loadRecents() {
 function toggleFilters(forceState) {
     const newState = forceState !== undefined ? forceState : !state.isFiltersVisible;
     state.isFiltersVisible = newState;
+    
+    const isMobile = window.innerWidth <= 768;
 
     if (newState) {
-        el.filtersPanel.style.display = 'flex';
-        el.navFilterToggle.classList.add('active');
-    } else {
-        if (window.innerWidth <= 768) {
-            el.filtersPanel.style.display = 'none';
-        } else {
+        el.filtersPanel.classList.add('active');
+        if (isMobile) {
             el.filtersPanel.style.display = 'flex';
         }
-        el.navFilterToggle.classList.remove('active');
+        if (el.navFilterToggle) el.navFilterToggle.classList.add('active');
+    } else {
+        el.filtersPanel.classList.remove('active');
+        // On desktop (isMobile=false), we usually want it visible or at least follow CSS
+        // but on mobile we explicitly hide it.
+        if (isMobile) {
+            el.filtersPanel.style.display = 'none';
+        } else {
+            // on desktop, ensure it defaults to flex if explore view
+            if (state.currentView === 'explore') {
+                el.filtersPanel.style.display = 'flex';
+            }
+        }
+        if (el.navFilterToggle) el.navFilterToggle.classList.remove('active');
     }
 }
 
