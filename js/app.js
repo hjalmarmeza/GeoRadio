@@ -170,15 +170,16 @@ const state = {
 };
 
 // --- DOM Elements ---
+// --- DOM Elements ---
 const el = {
     countrySelect: document.getElementById('country-select'),
     btnFavCountry: document.getElementById('btn-fav-country'),
     citySelect: document.getElementById('city-select'),
-    btnFavCity: document.getElementById('btn-fav-city'), // New Fav City Btn
+    btnFavCity: document.getElementById('btn-fav-city'),
     cityGroup: document.getElementById('city-group'),
     stationsGrid: document.getElementById('stations-grid'),
     favoritesGrid: document.getElementById('favorites-grid'),
-    trendsGrid: document.getElementById('trends-grid'), // New Grid
+    trendsGrid: document.getElementById('trends-grid'),
     loader: document.getElementById('stations-loader'),
     searchInput: document.getElementById('station-search'),
     totalStations: document.getElementById('count-stations'),
@@ -188,33 +189,32 @@ const el = {
     // Views
     viewExplore: document.getElementById('view-explore'),
     viewFavorites: document.getElementById('view-favorites'),
-    viewTrends: document.getElementById('view-trends'), // New View
-    viewRecents: document.getElementById('view-history'), // New Recents View
+    viewTrends: document.getElementById('view-trends'),
+    viewRecents: document.getElementById('view-history'),
     filtersPanel: document.getElementById('filters-panel'),
 
-    // Grids (Moved up for clarity or added here if missed)
-    recentsGrid: document.getElementById('history-grid'),
+    // Layout
+    contentWrapper: document.querySelector('.content-wrapper'), // To help mobile layout if needed
+
+    // Nav Items (using querySelector with attribute for mobile/sidebar consistency)
+    navExplore: document.querySelector('[data-view="explore"]'),
+    navFavorites: document.querySelector('[data-view="favorites"]'),
+    navTrends: document.querySelector('[data-view="trends"]'),
+    navRecents: document.querySelector('[data-view="history"]'),
+    navFilterToggle: document.getElementById('btn-mobile-filters'), // The 'Filtros' tab
 
     // Player
     playerStationName: document.getElementById('player-station-name'),
     playerStatus: document.getElementById('player-status'),
-    playerLogo: document.getElementById('player-logo'), // Restored ID
-    btnPlay: document.getElementById('btn-play-toggle'), // Restored ID
-    btnSleep: document.getElementById('btn-sleep'), // Restored ID
+    playerLogo: document.getElementById('player-logo'),
+    btnPlay: document.getElementById('btn-play-toggle'),
+    btnSleep: document.getElementById('btn-sleep'),
     btnPlayerWhatsapp: document.getElementById('btn-player-whatsapp'),
-    playIcon: document.getElementById('play-icon'), // Restored ID
+    playIcon: document.getElementById('play-icon'),
     volumeSlider: document.getElementById('volume-slider'),
 
-    // Nav
-    navExplore: document.querySelector('[data-view="explore"]'),
-    navFavorites: document.querySelector('[data-view="favorites"]'),
-    navTrends: document.getElementById('nav-trends'),
-    navFilterToggle: document.getElementById('btn-mobile-filters'),
-
-    // Sidebar
+    // Sidebar specifically
     btnViewRecents: document.getElementById('btn-view-recents'),
-    btnFavCountry: document.getElementById('btn-fav-country'),
-    btnFavCity: document.getElementById('btn-fav-city'),
 
     // Modals
     timerModal: document.getElementById('modal-sleep'),
@@ -223,7 +223,7 @@ const el = {
 
     // EQ & Visualizer
     visualizerCanvas: document.getElementById('visualizer-canvas'),
-    btnEq: document.getElementById('btn-eq'), // Restored ID
+    btnEq: document.getElementById('btn-eq'),
     eqModal: document.getElementById('modal-eq'),
     btnCloseEq: document.getElementById('btn-close-eq'),
     btnCloseFilters: document.getElementById('btn-close-filters')
@@ -535,21 +535,21 @@ function switchView(viewName) {
     state.currentView = viewName;
 
     // Update Nav UI
-    el.navExplore.classList.toggle('active', viewName === 'explore');
-    el.navFavorites.classList.toggle('active', viewName === 'favorites');
-    el.navTrends.classList.toggle('active', viewName === 'trends');
-    
-    // Deactivate filter toggle if Switching views
-    if (el.navFilterToggle) el.navFilterToggle.classList.remove('active');
+    const isMobile = window.innerWidth <= 768;
 
+    if (el.navExplore) el.navExplore.classList.toggle('active', viewName === 'explore');
+    if (el.navFavorites) el.navFavorites.classList.toggle('active', viewName === 'favorites');
+    if (el.navTrends) el.navTrends.classList.toggle('active', viewName === 'trends');
+    if (el.navRecents) el.navRecents.classList.toggle('active', viewName === 'history');
+    
     // Default hiding
-    el.viewExplore.classList.add('hidden');
-    el.viewFavorites.classList.add('hidden');
-    el.viewTrends.classList.add('hidden');
+    if (el.viewExplore) el.viewExplore.classList.add('hidden');
+    if (el.viewFavorites) el.viewFavorites.classList.add('hidden');
+    if (el.viewTrends) el.viewTrends.classList.add('hidden');
     if (el.viewRecents) el.viewRecents.classList.add('hidden');
 
     // Update Content UI & Logic
-    if (viewName === 'explore') {
+    if (viewName === 'explore' && el.viewExplore) {
         el.viewExplore.classList.remove('hidden');
 
         // Restore title or default
@@ -559,9 +559,7 @@ function switchView(viewName) {
             el.gridTitle.textContent = 'Explora el mundo';
         }
 
-        // Restore list if we have data
         if (state.stations && state.stations.length > 0) {
-            // Check if there was a filter applied
             const term = el.searchInput ? el.searchInput.value : '';
             if (term) {
                 const filtered = state.stations.filter(s => normalizeText(s.name).includes(normalizeText(term)));
@@ -569,30 +567,30 @@ function switchView(viewName) {
             } else {
                 renderStationsList(el.stationsGrid, state.stations);
             }
-            toggleSearch(true); // Re-enable search input
+            toggleSearch(true);
         } else {
-            renderStationsList(el.stationsGrid, []); // Show empty state
+            renderStationsList(el.stationsGrid, []);
             toggleSearch(false);
         }
     } else if (viewName === 'favorites') {
-        el.viewFavorites.classList.remove('hidden');
-        el.gridTitle.textContent = 'Mis Favoritos';
+        if (el.viewFavorites) el.viewFavorites.classList.remove('hidden');
+        if (el.gridTitle) el.gridTitle.textContent = 'Mis Favoritos';
         loadFavorites();
     } else if (viewName === 'trends') {
-        el.viewTrends.classList.remove('hidden');
-        el.gridTitle.textContent = 'Top 50 Global';
+        if (el.viewTrends) el.viewTrends.classList.remove('hidden');
+        if (el.gridTitle) el.gridTitle.textContent = 'Top 50 Global';
         loadTrends();
-    } else if (viewName === 'history') { // Recents View
-        el.viewRecents.classList.remove('hidden');
-        el.gridTitle.textContent = 'Escuchado Recientemente';
+    } else if (viewName === 'history') { 
+        if (el.viewRecents) el.viewRecents.classList.remove('hidden');
+        if (el.gridTitle) el.gridTitle.textContent = 'Escuchado Recientemente';
         loadRecents();
     }
 
-    // In mobile, show filters by default if no country selected
-    const isMobile = window.innerWidth <= 768;
-    if (viewName === 'explore' && isMobile && !state.selectedCountry) {
-        toggleFilters(true);
-    } else {
+    // Handle Filters Drawer vs Content
+    if (isMobile) {
+        // Only auto-open on init if country missing. 
+        // If clicking Explorar explicitly, we stay there unless we decide otherwise.
+        // For now, toggleFilters(false) to ensure content is visible.
         toggleFilters(false);
     }
 }
@@ -617,25 +615,31 @@ function toggleFilters(forceState) {
         el.filtersPanel.classList.add('active');
         if (isMobile) {
             el.filtersPanel.style.display = 'flex';
-            // Deactivate other tabs
-            el.navExplore.classList.remove('active');
-            el.navFavorites.classList.remove('active');
-            el.navTrends.classList.remove('active');
+            // EXCLUSIVE: Highlight Filters, deactivate others
+            if (el.navFilterToggle) el.navFilterToggle.classList.add('active');
+            if (el.navExplore) el.navExplore.classList.remove('active');
+            if (el.navFavorites) el.navFavorites.classList.remove('active');
+            if (el.navTrends) el.navTrends.classList.remove('active');
+        } else {
+            // Desktop behavior
+            if (el.navFilterToggle) el.navFilterToggle.classList.add('active');
         }
-        if (el.navFilterToggle) el.navFilterToggle.classList.add('active');
     } else {
         el.filtersPanel.classList.remove('active');
-        // On desktop (isMobile=false), we usually want it visible or at least follow CSS
-        // but on mobile we explicitly hide it.
         if (isMobile) {
             el.filtersPanel.style.display = 'none';
+            // RESTORE HIGHLIGHT of the actual view we are in
+            if (el.navFilterToggle) el.navFilterToggle.classList.remove('active');
+            if (el.navExplore) el.navExplore.classList.toggle('active', state.currentView === 'explore');
+            if (el.navFavorites) el.navFavorites.classList.toggle('active', state.currentView === 'favorites');
+            if (el.navTrends) el.navTrends.classList.toggle('active', state.currentView === 'trends');
+            if (el.navRecents) el.navRecents.classList.toggle('active', state.currentView === 'history');
         } else {
-            // on desktop, ensure it defaults to flex if explore view
+            if (el.navFilterToggle) el.navFilterToggle.classList.remove('active');
             if (state.currentView === 'explore') {
                 el.filtersPanel.style.display = 'flex';
             }
         }
-        if (el.navFilterToggle) el.navFilterToggle.classList.remove('active');
     }
 }
 
@@ -650,6 +654,7 @@ function renderCurrentView() {
 }
 
 function renderStationsList(container, stations, isFavView = false) {
+    if (!container) return;
     container.innerHTML = '';
 
     if (!stations || stations.length === 0) {

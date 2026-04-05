@@ -252,13 +252,36 @@
                 <div class="spinner"></div>
             </div>
 
-            <div class="stations-grid" id="stations-grid">
-                <!-- Cards inject via JS -->
+            <!-- TABS CONTENT: EXPLORE -->
+            <div id="view-explore">
+                <div class="stations-grid" id="stations-grid">
+                    <!-- Cards inject via JS -->
+                </div>
+                <div id="empty-state" class="empty-state hidden">
+                    <span class="material-icons-round">sensors_off</span>
+                    <p>No se encontraron señales en esta zona.</p>
+                </div>
             </div>
 
-            <div id="empty-state" class="empty-state hidden">
-                <span class="material-icons-round">sensors_off</span>
-                <p>No se encontraron señales en esta zona.</p>
+            <!-- TABS CONTENT: FAVORITES -->
+            <div id="view-favorites" class="hidden">
+                <div class="stations-grid" id="favorites-grid">
+                    <!-- Cards inject via JS -->
+                </div>
+            </div>
+
+            <!-- TABS CONTENT: TRENDS -->
+            <div id="view-trends" class="hidden">
+                <div class="stations-grid" id="trends-grid">
+                    <!-- Cards inject via JS -->
+                </div>
+            </div>
+
+            <!-- TABS CONTENT: RECENT -->
+            <div id="view-history" class="hidden">
+                <div class="stations-grid" id="history-grid">
+                    <!-- Cards inject via JS -->
+                </div>
             </div>
         </main>
     </div>
@@ -320,7 +343,7 @@
 
     <!-- Mobile Nav -->
     <nav class="mobile-nav">
-        <button class="nav-item active" id="btn-mobile-filters">
+        <button class="nav-item active" id="btn-mobile-filters" data-view="filters">
             <span class="material-icons-round">tune</span>
             <span>Filtros</span>
         </button>
