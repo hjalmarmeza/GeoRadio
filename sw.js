@@ -1,4 +1,4 @@
-const CACHE_NAME = 'georadio-v6-netfirst';
+const CACHE_NAME = 'georadio-v7-stable';
 const ASSETS = [
     './',
     './index.html',
