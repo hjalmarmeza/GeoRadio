@@ -305,12 +305,7 @@
         <div class="player-controls">
             <!-- Sleep Timer Button -->
             <button class="btn-icon" id="btn-sleep" title="Temporizador">
-                <span class="material-icons-round">bedtime</span>
-            </button>
-
-            <!-- EQ Button -->
-            <button class="btn-icon" id="btn-eq" title="Ecualizador">
-                <span class="material-icons-round">graphic_eq</span>
+                <span class="material-icons-round">timer</span>
             </button>
 
             <!-- WhatsApp Button (Dynamic) -->
@@ -358,27 +353,19 @@
     </nav>
 
     <!-- Modals -->
+    <!-- Sleep Modal -->
     <div id="modal-sleep" class="modal hidden">
-        <div class="modal-content glass-panel">
-            <h2>Temporizador</h2>
+        <div class="modal-content glass-effect">
+            <div class="modal-header">
+                <h2>Temporizador de apagado</h2>
+                <span class="material-icons-round" id="btn-close-sleep" style="cursor:pointer">close</span>
+            </div>
             <div class="sleep-options">
-                <button class="btn-sleep" data-min="15">15m</button>
-                <button class="btn-sleep" data-min="30">30m</button>
-                <button class="btn-sleep" data-min="60">60m</button>
-                <button class="btn-sleep" data-min="0" id="btn-sleep-off">OFF</button>
+                <button class="btn-sleep-opt" data-min="15">15m</button>
+                <button class="btn-sleep-opt" data-min="30">30m</button>
+                <button class="btn-sleep-opt" data-min="60">60m</button>
+                <button class="btn-sleep-opt" data-min="0" id="btn-sleep-off">OFF</button>
             </div>
-            <button class="btn-close-modal" id="btn-close-sleep">Cerrar</button>
-        </div>
-    </div>
-
-    <!-- Equalizer Modal -->
-    <div id="modal-eq" class="modal hidden">
-        <div class="modal-content glass-panel">
-            <h2>Procesador de Audio</h2>
-            <div class="eq-controls">
-               <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">El ecualizador inteligente se ajusta automáticamente según el género de la estación.</p>
-            </div>
-            <button class="btn-close-modal" id="btn-close-eq">Cerrar</button>
         </div>
     </div>
 

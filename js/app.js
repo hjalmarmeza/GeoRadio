@@ -219,13 +219,10 @@ const el = {
     // Modals
     timerModal: document.getElementById('modal-sleep'),
     btnCloseTimer: document.getElementById('btn-close-sleep'),
-    timerOptions: document.querySelectorAll('.btn-sleep'),
+    timerOptions: document.querySelectorAll('.btn-sleep-opt'),
 
-    // EQ & Visualizer
+    // Visualizer & Visual Effects
     visualizerCanvas: document.getElementById('visualizer-canvas'),
-    btnEq: document.getElementById('btn-eq'),
-    eqModal: document.getElementById('modal-eq'),
-    btnCloseEq: document.getElementById('btn-close-eq'),
     btnCloseFilters: document.getElementById('btn-close-filters')
 };
 
@@ -370,6 +367,33 @@ function setupEventListeners() {
             updateFavCityButton(city);
         });
     }
+
+    // --- Timer Logic ---
+    if (el.btnSleep && el.timerModal && el.btnCloseTimer) {
+        el.btnSleep.addEventListener('click', () => {
+            el.timerModal.classList.remove('hidden');
+        });
+
+        el.btnCloseTimer.addEventListener('click', () => {
+            el.timerModal.classList.add('hidden');
+        });
+
+        // Re-query options within the context or use the pre-defined ones
+        // Using el.timerOptions if it was queried after DOM ready (module does this)
+        el.timerOptions.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const mins = parseInt(btn.dataset.min);
+                if (mins === 0) {
+                    player.cancelSleepTimer();
+                    el.btnSleep.classList.remove('active');
+                } else {
+                    player.startSleepTimer(mins);
+                    el.btnSleep.classList.add('active');
+                }
+                el.timerModal.classList.add('hidden');
+            });
+        });
+    }
 }
 
 // New Sidebar Buttons
@@ -380,7 +404,7 @@ if (el.btnViewRecents) {
     });
 }
 
-// Theme Toggle Logic
+// Themes logic
 const toggleTheme = () => {
     const currentCheck = Storage.getTheme();
     const themes = ['cyan', 'purple', 'gold', 'neon_green'];
@@ -405,76 +429,6 @@ const btnZenMode = document.getElementById('btn-zen-mode');
 if (btnZenMode) {
     btnZenMode.addEventListener('click', () => {
         document.body.classList.toggle('immersive-mode');
-    });
-}
-
-// EQ Logic
-if (el.btnEq && el.btnCloseEq && el.eqModal) {
-    el.btnEq.addEventListener('click', () => el.eqModal.classList.remove('hidden'));
-    el.btnCloseEq.addEventListener('click', () => el.eqModal.classList.add('hidden'));
-
-    // Presets Interaction
-    const presets = {
-        flat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        rock: [5, 4, 3, 1, -1, -1, 0, 2, 4, 5],
-        pop: [2, 1, 2, 4, 4, 2, 0, -1, -2, -1],
-        jazz: [3, 2, 1, 2, -2, -2, 0, 1, 3, 4],
-        classical: [4, 3, 2, 1, -1, -1, 0, 1, 3, 4]
-    };
-
-    const sliders = document.querySelectorAll('.eq-band input');
-    const btnPresets = document.querySelectorAll('.btn-preset');
-
-    btnPresets.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            // Remove active from others
-            btnPresets.forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-
-            const presetName = e.target.dataset.preset;
-            const values = presets[presetName];
-
-            if (values) {
-                sliders.forEach((slider, i) => {
-                    if (values[i] !== undefined) {
-                        slider.value = values[i];
-                        // Trigger change for any listener
-                    }
-                });
-            }
-        });
-    });
-
-    // Reset preset active if slider moved manually
-    sliders.forEach(s => {
-        s.addEventListener('input', () => {
-            btnPresets.forEach(b => b.classList.remove('active'));
-        });
-    });
-}
-
-// Timer Logic
-if (el.btnSleep && el.timerModal && el.btnCloseTimer) {
-    el.btnSleep.addEventListener('click', () => {
-        el.timerModal.classList.remove('hidden');
-    });
-
-    el.btnCloseTimer.addEventListener('click', () => {
-        el.timerModal.classList.add('hidden');
-    });
-
-    el.timerOptions.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const mins = parseInt(e.target.dataset.min); // Fixed dataset key (min instead of time)
-            if (mins === 0) {
-                player.cancelSleepTimer();
-                el.btnSleep.classList.remove('active');
-            } else {
-                player.startSleepTimer(mins);
-                el.btnSleep.classList.add('active');
-            }
-            el.timerModal.classList.add('hidden');
-        });
     });
 }
 

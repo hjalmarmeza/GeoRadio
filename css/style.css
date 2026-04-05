@@ -872,131 +872,121 @@ body {
 /* =========================================
    MODAL STYLES (NEW)
    ========================================= */
-.modal-overlay {
+/* =========================================
+   MODAL SYSTEM - PREMIUM GLASS
+   ========================================= */
+.modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
-    backdrop-filter: blur(5px);
+    z-index: 5000;
+    transition: all 0.3s var(--ease);
 }
 
-.modal {
-    background: var(--bg-deep);
-    border: 1px solid var(--glass-border);
-    padding: 2rem;
-    border-radius: 20px;
+.modal.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.modal-content {
     width: 90%;
-    max-width: 320px;
-    text-align: center;
-    box-shadow: 0 0 50px rgba(0, 243, 255, 0.1);
+    max-width: 400px;
+    padding: 2rem;
+    border-radius: 24px;
+    border: 1px solid var(--glass-border);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    animation: modalPop 0.4s var(--ease);
 }
 
-.modal h3 {
-    margin-bottom: 1.5rem;
+.glass-effect {
+    background: rgba(20, 20, 35, 0.85);
+    backdrop-filter: blur(20px);
+}
+
+@keyframes modalPop {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.modal-header h2 {
     font-family: var(--font-heading);
+    font-size: 1.2rem;
+    letter-spacing: 1px;
     color: var(--primary);
 }
 
-.timer-options {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.timer-options {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-/* EQ Modal Styles */
-.eq-modal-content {
-    max-width: 600px;
-    width: 95%;
-}
-
-.eq-sliders {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    height: 200px;
-    margin-bottom: 2rem;
-    gap: 5px;
-    overflow-x: auto;
-}
-
-.eq-band {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100%;
-    justify-content: flex-end;
-    min-width: 40px;
-}
-
-.eq-band input[type=range][orient=vertical] {
-    writing-mode: bt-lr;
-    /* IE */
-    -webkit-appearance: slider-vertical;
-    /* WebKit */
-    width: 8px;
-    height: 150px;
-    padding: 0 5px;
-    background: var(--glass-border);
-}
-
-.eq-band span {
-    margin-top: 10px;
-    font-size: 0.6rem;
+.modal-header .material-icons-round {
     color: var(--text-muted);
+    transition: color 0.3s;
 }
 
-.eq-presets {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 1.5rem;
+.modal-header .material-icons-round:hover {
+    color: var(--accent);
 }
 
-.btn-preset {
+.sleep-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
+}
+
+.btn-sleep-opt {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--glass-border);
-    padding: 6px 12px;
-    border-radius: 20px;
-    color: var(--text-muted);
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn-preset:hover {
-    background: var(--primary);
-    color: #000;
-}
-
-.btn-timer {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--glass-border);
+    padding: 1.2rem;
+    border-radius: 16px;
     color: var(--text-main);
-    padding: 1rem;
-    border-radius: 12px;
-    cursor: pointer;
     font-family: var(--font-body);
-    transition: all 0.2s;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s var(--ease);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
 }
 
-.btn-timer:hover {
-    border-color: var(--primary);
+.btn-sleep-opt:hover {
     background: rgba(0, 243, 255, 0.1);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 243, 255, 0.2);
+}
+
+#btn-sleep-off {
+    grid-column: span 2;
+    background: rgba(255, 0, 85, 0.1);
+    border-color: rgba(255, 0, 85, 0.3);
+    color: var(--accent);
+}
+
+#btn-sleep-off:hover {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 5px 15px rgba(255, 0, 85, 0.4);
+}
+
+/* Add style for active timer button */
+#btn-sleep.active {
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary);
 }
 
 .btn-close-modal {
@@ -1005,12 +995,6 @@ body {
     color: var(--text-muted);
     cursor: pointer;
     text-decoration: underline;
-}
-
-/* Add style for active timer button */
-#btn-sleep.active {
-    color: var(--secondary);
-    text-shadow: 0 0 10px var(--secondary);
 }
 
 /* =========================================
