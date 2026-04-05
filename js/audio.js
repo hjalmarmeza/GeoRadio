@@ -101,49 +101,36 @@ export class RadioPlayer {
 
             if (!this.ctx || !this.canvas) return;
 
-            // --- Premium Sound Mesh / Ribbon Visualizer ---
+            const ctx = this.ctx;
+            const w = this.canvas.width;
+            const h = this.canvas.height;
+
+            ctx.clearRect(0, 0, w, h);
+
             const time = Date.now() / 1000;
             const centerY = h / 2;
-            const lines = 12; // Number of lines in the ribbon
+            const lines = 8;
 
-            ctx.globalCompositeOperation = 'screen'; // Additive blending for glow look
+            ctx.globalCompositeOperation = 'screen';
 
-            // Use App Theme Colors
             const baseColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#00f3ff';
             const secondaryColor = getComputedStyle(document.documentElement).getPropertyValue('--secondary').trim() || '#bc13fe';
 
             for (let j = 0; j < lines; j++) {
                 ctx.beginPath();
-
-                // Interleaved colors
                 ctx.strokeStyle = j % 2 === 0 ? baseColor : secondaryColor;
 
-                // Fade out edges of the ribbon
                 const alpha = 0.1 + (Math.sin((j / lines) * Math.PI) * 0.4);
                 ctx.globalAlpha = alpha;
                 ctx.lineWidth = 1.5;
 
                 for (let x = 0; x < w; x += 5) {
-                    // Normalized X (0 to 1)
                     const nx = x / w;
-
-                    // Wave calculation
-                    // Combine low frequency (shape) and high frequency (detail)
                     const wave1 = Math.sin(nx * 10 + time * 2 + j * 0.2);
                     const wave2 = Math.cos(nx * 20 - time * 3 + j * 0.3);
-                    const wave3 = Math.sin(nx * 5 + time + j * 0.1); // Slow carrier
-
-                    // Amplitude peaks in middle, tapers at ends
+                    const wave3 = Math.sin(nx * 5 + time + j * 0.1);
                     const envelope = Math.pow(Math.sin(nx * Math.PI), 2);
-
-                    // Check for Immersive Mode
-                    const isImmersive = document.body.classList.contains('immersive-mode');
-                    const ampMultiplier = isImmersive ? 4.5 : 1.0; // HUGE amplitude
-
-                    const yOffset = (wave1 * 15 + wave2 * 10 + wave3 * 20) * envelope * ampMultiplier;
-
-                    // If Immersive, center might need offset if logo pushes distinct
-                    // But standard centerY is fine since logo is centered.
+                    const yOffset = (wave1 * 15 + wave2 * 10 + wave3 * 20) * envelope;
 
                     if (x === 0) ctx.moveTo(x, centerY + yOffset);
                     else ctx.lineTo(x, centerY + yOffset);
@@ -151,7 +138,6 @@ export class RadioPlayer {
                 ctx.stroke();
             }
 
-            // Reset context
             ctx.globalAlpha = 1.0;
             ctx.globalCompositeOperation = 'source-over';
         };

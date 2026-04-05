@@ -179,9 +179,9 @@ const el = {
     stationsGrid: document.getElementById('stations-grid'),
     favoritesGrid: document.getElementById('favorites-grid'),
     trendsGrid: document.getElementById('trends-grid'), // New Grid
-    loader: document.getElementById('loader'),
+    loader: document.getElementById('stations-loader'),
     searchInput: document.getElementById('station-search'),
-    totalStations: document.getElementById('total-stations'),
+    totalStations: document.getElementById('count-stations'),
     gridTitle: document.getElementById('grid-title'),
     searchWrap: document.querySelector('.search-wrap'),
 
@@ -198,34 +198,33 @@ const el = {
     // Player
     playerStationName: document.getElementById('player-station-name'),
     playerStatus: document.getElementById('player-status'),
-    playerLogo: document.getElementById('player-logo'),
-    btnPlay: document.getElementById('btn-play-toggle'),
-    btnSleep: document.getElementById('btn-sleep'), // New Btn
-    btnPlayerWhatsapp: document.getElementById('btn-player-whatsapp'), // New Btn
-    playIcon: document.getElementById('play-icon'),
+    playerLogo: document.getElementById('player-logo'), // Restored ID
+    btnPlay: document.getElementById('btn-play-toggle'), // Restored ID
+    btnSleep: document.getElementById('btn-sleep'), // Restored ID
+    btnPlayerWhatsapp: document.getElementById('btn-player-whatsapp'),
+    playIcon: document.getElementById('play-icon'), // Restored ID
     volumeSlider: document.getElementById('volume-slider'),
 
     // Nav
-    navExplore: document.getElementById('nav-explore'),
-    navFavorites: document.getElementById('nav-favorites'),
-    navTrends: document.getElementById('nav-trends'), // New Nav
-    navFilterToggle: document.getElementById('nav-filter-toggle'),
+    navExplore: document.querySelector('[data-view="explore"]'),
+    navFavorites: document.querySelector('[data-view="favorites"]'),
+    navTrends: document.getElementById('nav-trends'),
+    navFilterToggle: document.getElementById('btn-mobile-filters'),
 
     // Sidebar
     btnViewRecents: document.getElementById('btn-view-recents'),
-    btnViewRecents: document.getElementById('btn-view-recents'),
-    btnViewMapSidebar: document.getElementById('btn-view-map-sidebar'), // New Desktop Map Btn
-    btnThemeToggle: document.getElementById('btn-theme-toggle'), // New Theme Btn
+    btnFavCountry: document.getElementById('btn-fav-country'),
+    btnFavCity: document.getElementById('btn-fav-city'),
 
     // Modals
-    timerModal: document.getElementById('timer-modal'),
-    btnCloseTimer: document.getElementById('btn-close-timer'),
-    timerOptions: document.querySelectorAll('.btn-timer'),
+    timerModal: document.getElementById('modal-sleep'),
+    btnCloseTimer: document.getElementById('btn-close-sleep'),
+    timerOptions: document.querySelectorAll('.btn-sleep'),
 
     // EQ & Visualizer
     visualizerCanvas: document.getElementById('visualizer-canvas'),
-    btnEq: document.getElementById('btn-eq'),
-    eqModal: document.getElementById('eq-modal'),
+    btnEq: document.getElementById('btn-eq'), // Restored ID
+    eqModal: document.getElementById('modal-eq'),
     btnCloseEq: document.getElementById('btn-close-eq')
 };
 
@@ -330,20 +329,17 @@ function setupEventListeners() {
     });
 
     // Player Controls
-    el.btnPlay.addEventListener('click', () => {
-        player.toggle();
-    });
-
-    el.volumeSlider.addEventListener('input', (e) => {
-        player.setVolume(e.target.value);
-    });
+    if (el.btnPlay) el.btnPlay.addEventListener('click', () => player.toggle());
+    if (el.volumeSlider) {
+        el.volumeSlider.addEventListener('input', (e) => player.setVolume(parseFloat(e.target.value)));
+        player.setVolume(parseFloat(el.volumeSlider.value)); // Initialize volume on load
+    }
 
     // Navigation
-    el.navExplore.addEventListener('click', () => switchView('explore'));
-    el.navFavorites.addEventListener('click', () => switchView('favorites'));
-    el.navTrends.addEventListener('click', () => switchView('trends'));
-    el.navTrends.addEventListener('click', () => switchView('trends'));
-    el.navFilterToggle.addEventListener('click', () => toggleFilters());
+    if (el.navExplore) el.navExplore.addEventListener('click', () => switchView('explore'));
+    if (el.navFavorites) el.navFavorites.addEventListener('click', () => switchView('favorites'));
+    if (el.navTrends) el.navTrends.addEventListener('click', () => switchView('trends'));
+    if (el.navFilterToggle) el.navFilterToggle.addEventListener('click', () => toggleFilters());
 
     // Fav Country Click
     if (el.btnFavCountry) {
@@ -451,27 +447,29 @@ if (el.btnEq && el.btnCloseEq && el.eqModal) {
 }
 
 // Timer Logic
-el.btnSleep.addEventListener('click', () => {
-    el.timerModal.classList.remove('hidden');
-});
+if (el.btnSleep && el.timerModal && el.btnCloseTimer) {
+    el.btnSleep.addEventListener('click', () => {
+        el.timerModal.classList.remove('hidden');
+    });
 
-el.btnCloseTimer.addEventListener('click', () => {
-    el.timerModal.classList.add('hidden');
-});
-
-el.timerOptions.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        const mins = parseInt(e.target.dataset.time);
-        if (mins === 0) {
-            player.cancelSleepTimer();
-            el.btnSleep.classList.remove('active');
-        } else {
-            player.startSleepTimer(mins);
-            el.btnSleep.classList.add('active');
-        }
+    el.btnCloseTimer.addEventListener('click', () => {
         el.timerModal.classList.add('hidden');
     });
-});
+
+    el.timerOptions.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const mins = parseInt(e.target.dataset.min); // Fixed dataset key (min instead of time)
+            if (mins === 0) {
+                player.cancelSleepTimer();
+                el.btnSleep.classList.remove('active');
+            } else {
+                player.startSleepTimer(mins);
+                el.btnSleep.classList.add('active');
+            }
+            el.timerModal.classList.add('hidden');
+        });
+    });
+}
 
 // Logout
 const btnLogout = document.getElementById('btn-logout');
@@ -484,13 +482,13 @@ if (btnLogout) {
 
 // --- Logic ---
 async function loadStations(country, city) {
-    el.gridTitle.textContent = city + ", " + country;
+    if (el.gridTitle) el.gridTitle.textContent = city + ", " + country;
     showLoader(true);
 
     const stations = await API.getStations(country, city);
     state.stations = stations;
 
-    el.totalStations.textContent = stations.length;
+    if (el.totalStations) el.totalStations.textContent = stations.length;
     renderCurrentView();
     showLoader(false);
 
@@ -687,40 +685,52 @@ function renderStationsList(container, stations, isFavView = false) {
 }
 
 async function playStation(station) {
-    // PRE-CHECK: Maintenance Mode (Save Quota by checking on demand instead of fast polling)
-    if (await API.checkMaintenanceStatus()) {
-        localStorage.setItem('MAINTENANCE_MODE', 'true');
+    // Local-only maintenance check (no network call that can block)
+    const isMaint = localStorage.getItem('MAINTENANCE_MODE') === 'true';
+    if (isMaint) {
         maint.check();
-        // If locked out (not admin), stop
         if (!document.getElementById('maintenance-overlay').classList.contains('hidden')) return;
     }
 
     state.currentStation = station;
 
-    // Update UI
-    el.playerStationName.textContent = station.name;
-    el.playerStatus.textContent = "Conectando...";
-    el.playerStatus.style.color = "var(--primary)";
+    // Expand player bar
+    const playerBar = document.getElementById('player-bar');
+    if (playerBar) playerBar.classList.add('active');
 
-    if (station.favicon) {
-        el.playerLogo.innerHTML = `<img src="${station.favicon}" style="width:100%; height:100%; border-radius:12px; object-fit:cover;">`;
-    } else {
-        el.playerLogo.innerHTML = `<span class="material-icons-round">radio</span>`;
+    // Update UI with null guards
+    if (el.playerStationName) el.playerStationName.textContent = station.name;
+    if (el.playerStatus) {
+        el.playerStatus.textContent = "Conectando...";
+        el.playerStatus.style.color = "var(--primary)";
+    }
+
+    if (el.playerLogo) {
+        if (station.favicon) {
+            el.playerLogo.innerHTML = `<img src="${station.favicon}" style="width:100%; height:100%; border-radius:12px; object-fit:cover;" onerror="this.parentElement.innerHTML='<span class=\\'material-icons-round\\'>radio</span>'">`;
+        } else {
+            el.playerLogo.innerHTML = `<span class="material-icons-round">radio</span>`;
+        }
     }
 
     // Update WhatsApp Button in Player
-    if (station.whatsapp) {
-        el.btnPlayerWhatsapp.classList.remove('hidden');
-        el.btnPlayerWhatsapp.onclick = () => window.open(`https://wa.me/${station.whatsapp}`, '_blank');
-    } else {
-        el.btnPlayerWhatsapp.classList.add('hidden');
-        el.btnPlayerWhatsapp.onclick = null;
+    if (el.btnPlayerWhatsapp) {
+        if (station.whatsapp) {
+            el.btnPlayerWhatsapp.style.display = '';
+            el.btnPlayerWhatsapp.onclick = () => window.open(`https://wa.me/${station.whatsapp}`, '_blank');
+        } else {
+            el.btnPlayerWhatsapp.style.display = 'none';
+            el.btnPlayerWhatsapp.onclick = null;
+        }
     }
 
-    el.btnPlay.disabled = false;
+    if (el.btnPlay) el.btnPlay.disabled = false;
 
     // Play
-    Storage.addRecent(station); // Add to history
+    try {
+        Storage.addRecent(station); // Add to history
+    } catch(e) { /* storage may fail */ }
+    
     player.play(station.url_resolved || station.url);
 
     // Stop Idle Timer because we are listening
@@ -730,37 +740,33 @@ async function playStation(station) {
 // --- Player Callbacks ---
 function setupPlayerCallbacks() {
     player.onPlay = () => {
-        el.playerStatus.textContent = "Reproduciendo";
-        el.playerStatus.style.color = "#0f0"; // Greenish
-        el.playIcon.textContent = "pause";
-        el.btnPlay.classList.add('playing');
+        if (el.playerStatus) { el.playerStatus.textContent = "Reproduciendo"; el.playerStatus.style.color = "#0f0"; }
+        if (el.playIcon) el.playIcon.textContent = "pause";
+        if (el.btnPlay) el.btnPlay.classList.add('playing');
     };
 
     player.onPause = () => {
-        el.playerStatus.textContent = "Pausado";
-        el.playerStatus.style.color = "var(--text-muted)";
-        el.playIcon.textContent = "play_arrow";
-        el.btnPlay.classList.remove('playing');
+        if (el.playerStatus) { el.playerStatus.textContent = "Pausado"; el.playerStatus.style.color = "var(--text-muted)"; }
+        if (el.playIcon) el.playIcon.textContent = "play_arrow";
+        if (el.btnPlay) el.btnPlay.classList.remove('playing');
         Auth.startIdleTimer();
     };
 
     player.onError = () => {
-        el.playerStatus.textContent = "Error de conexión";
-        el.playerStatus.style.color = "var(--accent)";
-        el.playIcon.textContent = "error_outline";
+        if (el.playerStatus) { el.playerStatus.textContent = "Error de conexión"; el.playerStatus.style.color = "var(--accent)"; }
+        if (el.playIcon) el.playIcon.textContent = "error_outline";
         Auth.startIdleTimer();
     };
 
     player.onLoadStart = () => {
-        el.playerStatus.textContent = "Buffering...";
-        Auth.stopIdleTimer(); // Loading counts as activity
+        if (el.playerStatus) el.playerStatus.textContent = "Buffering...";
+        Auth.stopIdleTimer();
     };
 
     player.onTimerEnd = () => {
-        el.playerStatus.textContent = "Zzz... (Sleep)";
-        el.playerStatus.style.color = "var(--secondary)";
-        el.btnSleep.classList.remove('active');
-        Auth.startIdleTimer(); // Sleep ended playback -> start idle
+        if (el.playerStatus) { el.playerStatus.textContent = "Zzz... (Sleep)"; el.playerStatus.style.color = "var(--secondary)"; }
+        if (el.btnSleep) el.btnSleep.classList.remove('active');
+        Auth.startIdleTimer();
     };
 }
 

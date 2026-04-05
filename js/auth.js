@@ -39,16 +39,50 @@ export const Auth = {
         if (!overlay) return;
 
         // Toggles
-        document.getElementById('link-register').onclick = (e) => { e.preventDefault(); this.toggleForms('register'); };
-        document.getElementById('link-login').onclick = (e) => { e.preventDefault(); this.toggleForms('login'); };
-        document.getElementById('link-forgot').onclick = (e) => { e.preventDefault(); this.toggleForms('forgot'); };
-        document.getElementById('link-back-login').onclick = (e) => { e.preventDefault(); this.toggleForms('login'); };
+        const linkReg = document.getElementById('link-register');
+        if (linkReg) linkReg.onclick = (e) => { e.preventDefault(); this.toggleForms('register'); };
+        
+        const linkLogin = document.getElementById('link-login');
+        if (linkLogin) linkLogin.onclick = (e) => { e.preventDefault(); this.toggleForms('login'); };
+        
+        const linkForgot = document.getElementById('link-forgot');
+        if (linkForgot) linkForgot.onclick = (e) => { e.preventDefault(); this.toggleForms('forgot'); };
+        
+        const linkBack = document.getElementById('link-back-login');
+        if (linkBack) linkBack.onclick = (e) => { e.preventDefault(); this.toggleForms('login'); };
 
         // Submits
-        document.getElementById('form-login').onsubmit = (e) => this.handleLogin(e);
-        document.getElementById('form-register').onsubmit = (e) => this.handleRegister(e);
-        document.getElementById('form-forgot').onsubmit = (e) => this.handleForgot(e);
-        document.getElementById('form-change-pass').onsubmit = (e) => this.handleChangePassword(e);
+        const formLogin = document.getElementById('form-login');
+        if (formLogin) formLogin.onsubmit = (e) => this.handleLogin(e);
+        
+        const formReg = document.getElementById('form-register');
+        if (formReg) formReg.onsubmit = (e) => this.handleRegister(e);
+        
+        const formForgot = document.getElementById('form-forgot');
+        if (formForgot) formForgot.onsubmit = (e) => this.handleForgot(e);
+        
+        const formChange = document.getElementById('form-change-pass');
+        if (formChange) formChange.onsubmit = (e) => this.handleChangePassword(e);
+
+        // Password Toggles
+        const toggleBtns = document.querySelectorAll('.btn-toggle-pass');
+        toggleBtns.forEach(btn => {
+            btn.onclick = () => {
+                const targetId = btn.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                const icon = btn.querySelector('.material-icons-round');
+                
+                if (input && icon) {
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.textContent = 'visibility_off';
+                    } else {
+                        input.type = 'password';
+                        icon.textContent = 'visibility';
+                    }
+                }
+            };
+        });
     },
 
     // --- IDLE TIMER (15 Mins) ---
@@ -101,18 +135,17 @@ export const Auth = {
         const changePass = document.getElementById('form-change-pass');
 
         const msg = document.getElementById('auth-message');
-        msg.classList.add('hidden');
-        msg.className = 'auth-message hidden';
+        if (msg) { msg.classList.add('hidden'); msg.className = 'auth-message hidden'; }
 
-        login.classList.add('hidden');
-        reg.classList.add('hidden');
-        forgot.classList.add('hidden');
-        changePass.classList.add('hidden');
+        if (login) login.classList.add('hidden');
+        if (reg) reg.classList.add('hidden');
+        if (forgot) forgot.classList.add('hidden');
+        if (changePass) changePass.classList.add('hidden');
 
-        if (view === 'login') login.classList.remove('hidden');
-        else if (view === 'register') reg.classList.remove('hidden');
-        else if (view === 'forgot') forgot.classList.remove('hidden');
-        else if (view === 'change-pass') changePass.classList.remove('hidden');
+        if (view === 'login' && login) login.classList.remove('hidden');
+        else if (view === 'register' && reg) reg.classList.remove('hidden');
+        else if (view === 'forgot' && forgot) forgot.classList.remove('hidden');
+        else if (view === 'change-pass' && changePass) changePass.classList.remove('hidden');
     },
 
     async handleLogin(e) {
@@ -314,6 +347,7 @@ export const Auth = {
 
     showMessage(msg, success = false) {
         const el = document.getElementById('auth-message');
+        if (!el) return;
         el.textContent = msg;
         el.classList.remove('hidden');
         if (success) el.classList.add('success');

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'georadio-v3-fire';
+const CACHE_NAME = 'georadio-v6-netfirst';
 const ASSETS = [
     './',
     './index.html',
@@ -30,14 +30,24 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-    // For API calls or Audio streams, go Network Only (or Network First)
+    // For API calls or Audio streams, go Network Only
     if (e.request.url.includes('api.radio-browser.info') || e.request.url.includes('mp3') || e.request.url.includes('aac')) {
         return;
     }
 
-    // For App Shell, go Cache First, but fall back to network if not found or try network for updates?
-    // Stale-while-revalidate strategy is safer for dev, but let's stick to Cache First with Versioning for now.
+    // Network First strategy: always try network, fall back to cache
+    // This ensures fresh JS/CSS/HTML during development
     e.respondWith(
-        caches.match(e.request).then((response) => response || fetch(e.request))
+        fetch(e.request)
+            .then((networkResponse) => {
+                // Update cache with fresh network response
+                const cloned = networkResponse.clone();
+                caches.open(CACHE_NAME).then(cache => cache.put(e.request, cloned));
+                return networkResponse;
+            })
+            .catch(() => {
+                // Network failed: serve from cache
+                return caches.match(e.request);
+            })
     );
 });

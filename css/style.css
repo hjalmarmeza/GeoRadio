@@ -243,6 +243,40 @@ body {
     box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
 }
 
+.input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.btn-toggle-pass {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s var(--ease);
+    z-index: 10;
+    backdrop-filter: blur(5px);
+}
+
+.btn-toggle-pass:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+}
+
+.btn-toggle-pass .material-icons-round {
+    font-size: 1.1rem;
+}
+
 .chevron {
     position: absolute;
     right: 12px;
@@ -446,13 +480,14 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 90px;
+    height: 100px;
     padding: 0 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-top: 1px solid var(--glass-border);
-    background: rgba(5, 5, 16, 0.9);
+    background: rgba(5, 5, 20, 0.95);
+    backdrop-filter: blur(10px);
     z-index: 200;
 }
 
@@ -464,42 +499,55 @@ body {
     height: 100%;
     pointer-events: none;
     z-index: -1;
-    opacity: 0.5;
+    opacity: 0.6;
 }
 
 .now-playing {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    width: 300px;
+    gap: 1.2rem;
+    width: 350px;
 }
 
 .station-logo-placeholder {
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 55px;
     background: linear-gradient(135deg, var(--primary), var(--secondary));
     border-radius: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
     color: #fff;
-    box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+    transition: transform 0.3s;
+}
+
+.now-playing:hover .station-logo-placeholder {
+    transform: scale(1.1);
 }
 
 .track-info h3 {
-    font-size: 1rem;
+    font-size: 1.1rem;
+    font-family: var(--font-heading);
     margin-bottom: 0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .track-info p {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--primary);
 }
 
 .player-controls {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    justify-content: center;
+    gap: 2rem;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .btn-icon {
@@ -507,19 +555,23 @@ body {
     border: none;
     color: var(--text-muted);
     cursor: pointer;
-    transition: color 0.2s;
+    transition: all 0.3s var(--ease);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-icon:hover {
     color: var(--text-main);
+    transform: translateY(-2px);
 }
 
 .btn-play-large {
-    width: 60px;
-    height: 60px;
+    width: 65px;
+    height: 65px;
     border-radius: 50%;
     background: transparent;
-    border: 2px solid var(--primary);
+    border: 3px solid var(--primary);
     color: var(--primary);
     display: flex;
     align-items: center;
@@ -531,18 +583,19 @@ body {
 .btn-play-large:hover {
     background: var(--primary);
     color: #000;
-    box-shadow: 0 0 20px var(--primary);
+    box-shadow: 0 0 30px var(--primary);
+    transform: scale(1.05);
 }
 
 .btn-play-large .material-icons-round {
-    font-size: 2rem;
+    font-size: 2.2rem;
 }
 
 .volume-control {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    width: 150px;
+    gap: 1rem;
+    width: 180px;
     color: var(--text-muted);
 }
 
@@ -550,19 +603,18 @@ body {
     width: 100%;
     height: 4px;
     -webkit-appearance: none;
-    appearance: none;
-    background: transparent;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 2px;
+    cursor: pointer;
 }
 
 #volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 12px;
-    height: 12px;
-    background: var(--text-main);
+    width: 14px;
+    height: 14px;
+    background: var(--primary);
     border-radius: 50%;
-    cursor: pointer;
+    box-shadow: 0 0 10px var(--primary);
 }
 
 /* =========================================
