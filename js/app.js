@@ -253,6 +253,11 @@ async function init() {
     const countries = await API.getCountries();
     populateSelect(el.countrySelect, countries.map(c => c.name), "Selecciona...", 'country');
     showLoader(false);
+
+    // Initial view: show filters if on mobile
+    if (window.innerWidth <= 768) {
+        toggleFilters(true);
+    }
 }
 
 // --- Event Listeners ---
@@ -533,6 +538,9 @@ function switchView(viewName) {
     el.navExplore.classList.toggle('active', viewName === 'explore');
     el.navFavorites.classList.toggle('active', viewName === 'favorites');
     el.navTrends.classList.toggle('active', viewName === 'trends');
+    
+    // Deactivate filter toggle if Switching views
+    if (el.navFilterToggle) el.navFilterToggle.classList.remove('active');
 
     // Default hiding
     el.viewExplore.classList.add('hidden');
@@ -609,6 +617,10 @@ function toggleFilters(forceState) {
         el.filtersPanel.classList.add('active');
         if (isMobile) {
             el.filtersPanel.style.display = 'flex';
+            // Deactivate other tabs
+            el.navExplore.classList.remove('active');
+            el.navFavorites.classList.remove('active');
+            el.navTrends.classList.remove('active');
         }
         if (el.navFilterToggle) el.navFilterToggle.classList.add('active');
     } else {
