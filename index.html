@@ -263,18 +263,7 @@
         </main>
     </div>
 
-    <!-- Map View Overlay (Hidden by default) -->
-    <div id="map-view" class="map-view hidden">
-        <div class="map-header">
-            <button class="btn-icon" id="btn-close-map">
-                <span class="material-icons-round">arrow_back</span>
-            </button>
-            <h2>Explorador <span class="highlight">Geográfico</span></h2>
-        </div>
-        <div class="map-view-container">
-            <div id="geo-map"></div>
-        </div>
-    </div>
+
 
     <!-- Player Bar (RESTORING FROM STABLE BACKUP) -->
     <footer class="player-bar glass-panel" id="player-bar">
@@ -331,21 +320,17 @@
 
     <!-- Mobile Nav -->
     <nav class="mobile-nav">
-        <button class="nav-item active" data-view="explore">
-            <span class="material-icons-round">explore</span>
-            <span>Explorar</span>
+        <button class="nav-item" id="btn-mobile-filters">
+            <span class="material-icons-round">tune</span>
+            <span>Filtros</span>
         </button>
         <button class="nav-item" data-view="favorites">
             <span class="material-icons-round">favorite</span>
             <span>Favoritos</span>
         </button>
-        <button class="nav-item" id="btn-mobile-map">
-            <span class="material-icons-round">map</span>
-            <span>Mapa</span>
-        </button>
-        <button class="nav-item" id="btn-mobile-filters">
-            <span class="material-icons-round">tune</span>
-            <span>Filtros</span>
+        <button class="nav-item active" data-view="explore">
+            <span class="material-icons-round">explore</span>
+            <span>Explorar</span>
         </button>
     </nav>
 
