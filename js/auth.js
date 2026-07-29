@@ -85,23 +85,15 @@ export const Auth = {
         });
     },
 
-    // --- IDLE TIMER (15 Mins) ---
+    // --- IDLE TIMER (DISABLED) ---
     startIdleTimer() {
-        // Clear existing to be safe
-        this.stopIdleTimer();
-        // Start 15 minute countdown
-        this.idleTimer = setTimeout(() => {
-            console.warn("Session expired due to inactivity (15m)");
-            this.logout();
-            this.showError("Sesión cerrada por inactividad.");
-        }, 15 * 60 * 1000);
+        // Disabled: Prevent automatic logout when backgrounded or locked.
+        // this.stopIdleTimer();
+        // this.idleTimer = setTimeout(() => { ... }, ...);
     },
 
     stopIdleTimer() {
-        if (this.idleTimer) {
-            clearTimeout(this.idleTimer);
-            this.idleTimer = null;
-        }
+        // Disabled
     },
     // ----------------------------
 

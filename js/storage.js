@@ -66,6 +66,15 @@ export const Storage = {
         localStorage.setItem('georadio_theme', theme);
     },
 
+    getVolume() {
+        const vol = localStorage.getItem('georadio_volume');
+        return vol ? parseFloat(vol) : 1.0;
+    },
+
+    setVolume(vol) {
+        localStorage.setItem('georadio_volume', vol);
+    },
+
     isFavoriteCity(cityName, countryName) {
         const favs = this.getFavoriteCities();
         return favs.some(c => c.name === cityName && c.country === countryName);

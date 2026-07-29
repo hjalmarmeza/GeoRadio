@@ -1,4 +1,4 @@
-const CACHE_NAME = 'georadio-v7-stable';
+const CACHE_NAME = 'georadio-v8-stable';
 const ASSETS = [
     './',
     './index.html',
@@ -6,6 +6,7 @@ const ASSETS = [
     './js/app.js',
     './js/api.js',
     './js/audio.js',
+    './js/auth.js',
     './js/storage.js'
 ];
 

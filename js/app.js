@@ -334,8 +334,15 @@ function setupEventListeners() {
     // Player Controls
     if (el.btnPlay) el.btnPlay.addEventListener('click', () => player.toggle());
     if (el.volumeSlider) {
-        el.volumeSlider.addEventListener('input', (e) => player.setVolume(parseFloat(e.target.value)));
-        player.setVolume(parseFloat(el.volumeSlider.value)); // Initialize volume on load
+        const savedVol = Storage.getVolume();
+        el.volumeSlider.value = savedVol;
+        player.setVolume(savedVol); // Initialize volume on load
+        
+        el.volumeSlider.addEventListener('input', (e) => {
+            const vol = parseFloat(e.target.value);
+            player.setVolume(vol);
+            Storage.setVolume(vol);
+        });
     }
 
     // Navigation
@@ -721,7 +728,15 @@ async function playStation(station) {
         Storage.addRecent(station); // Add to history
     } catch(e) { /* storage may fail */ }
     
-    player.play(station.url_resolved || station.url);
+    if (typeof player.setMetadata === 'function') {
+        player.setMetadata(station);
+    }
+    
+    let finalUrl = station.url_resolved || station.url;
+    if (finalUrl && finalUrl.startsWith('http://')) {
+        finalUrl = finalUrl.replace('http://', 'https://');
+    }
+    player.play(finalUrl);
 
     // Stop Idle Timer because we are listening
     Auth.stopIdleTimer();

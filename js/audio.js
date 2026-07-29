@@ -11,6 +11,9 @@ export class RadioPlayer {
         this.onTimerEnd = null; // New hook
 
         this.sleepTimerId = null;
+        this.retryCount = 0;
+        this.maxRetries = 3;
+        this.currentUrl = null;
 
         this._initListeners();
     }
@@ -18,31 +21,74 @@ export class RadioPlayer {
     _initListeners() {
         this.audio.addEventListener('error', (e) => {
             console.error('Audio Error:', e);
-            if (this.onError) this.onError(e);
-            this.isPlaying = false;
+            if (this.retryCount < this.maxRetries && this.currentUrl) {
+                this.retryCount++;
+                console.log(`Retrying connection... Attempt ${this.retryCount}`);
+                if (this.onLoadStart) this.onLoadStart();
+                setTimeout(() => {
+                    this.play(this.currentUrl, true);
+                }, 2500);
+            } else {
+                if (this.onError) this.onError(e);
+                this.isPlaying = false;
+            }
         });
 
         this.audio.addEventListener('playing', () => {
             this.isPlaying = true;
             if (this.onPlay) this.onPlay();
             if (this.canvas && !this.animationId) this._animateVisualizer();
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.playbackState = 'playing';
+            }
         });
 
         this.audio.addEventListener('pause', () => {
             this.isPlaying = false;
             if (this.onPause) this.onPause();
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.playbackState = 'paused';
+            }
         });
 
         this.audio.addEventListener('waiting', () => {
             if (this.onLoadStart) this.onLoadStart();
         });
+
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.setActionHandler('play', () => this.toggle());
+            navigator.mediaSession.setActionHandler('pause', () => this.toggle());
+            navigator.mediaSession.setActionHandler('stop', () => {
+                this.audio.pause();
+                this.audio.src = '';
+            });
+        }
     }
 
-    play(url) {
+    setMetadata(station) {
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: station.name || 'Emisora Desconocida',
+                artist: station.tags ? station.tags.split(',')[0] : 'GeoRadio',
+                album: station.country || 'Global',
+                artwork: [
+                    { src: station.favicon || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(station.name || 'R') + '&background=00f3ff&color=000', sizes: '96x96', type: 'image/png' },
+                    { src: station.favicon || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(station.name || 'R') + '&background=00f3ff&color=000', sizes: '512x512', type: 'image/png' }
+                ]
+            });
+        }
+    }
+
+    play(url, isRetry = false) {
         if (!url) return;
+        if (!isRetry) {
+            this.retryCount = 0;
+            this.currentUrl = url;
+        }
         this.audio.src = url;
         this.audio.play().catch(e => {
             console.error("Play failed", e);
+            // Don't auto-retry on play() catch, it's usually a user interaction requirement
             if (this.onError) this.onError(e);
         });
     }
